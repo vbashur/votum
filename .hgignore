@@ -1,6 +1,6 @@
 # use glob syntax.
 syntax: glob
-osgmain\target\
+osgimain\target\
 osgiservice\target\
 osgimain\.settings\
 osgiservice\.settings\
