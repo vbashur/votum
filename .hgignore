@@ -1,0 +1,7 @@
+# use glob syntax.
+syntax: glob
+osgmain\target\
+osgiservice\target\
+osgimain\.settings\
+osgiservice\.settings\
+
