@@ -1,7 +1,6 @@
 package com.vbashur;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,7 +92,7 @@ public class App {
 			}
 			System.out.println("Bundles activation is completed");
 		} catch (BundleException e) {
-			System.out.println("Something hoes wrong: " + e.getMessage());
+			System.out.println("Something goes wrong: " + e.getMessage());
 			e.printStackTrace();
 		}
 
