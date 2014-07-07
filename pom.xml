@@ -12,6 +12,10 @@
 		<module>osgimain</module>
 		<module>osgiservice</module>
     <module>osgiweb</module>
+    <module>servletmain</module>
+    <module>servletbridge</module>
+    <module>servletbundle</module>
+    <module>equinoxbridge</module>
   </modules>
 
 	 <properties>

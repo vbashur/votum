@@ -1,7 +1,23 @@
 # use glob syntax.
 syntax: glob
+.metadata\
+.settings\
+.project
 osgimain\target\
 osgiservice\target\
 osgimain\.settings\
 osgiservice\.settings\
+servletbridge\.settings
+servletbridge\target
+servletmain\.settings
+servletmain\target
+servletbundle\.settings
+servletbundle\target
+osgiweb\
+sample.http\
+bridge\
+equinoxbridge\
+Servers\
+RemoteSystemsTempFiles\
+
 
