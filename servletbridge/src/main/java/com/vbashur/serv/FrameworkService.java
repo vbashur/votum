@@ -1,9 +1,7 @@
 package com.vbashur.serv;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -11,7 +9,6 @@ import javax.servlet.ServletContext;
 
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
-import org.osgi.framework.BundleActivator;
 
 public final class FrameworkService
 {
