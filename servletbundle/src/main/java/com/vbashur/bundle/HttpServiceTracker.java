@@ -24,9 +24,12 @@ public class HttpServiceTracker extends ServiceTracker {
 		System.out.println("Adding HTTP Service");
 		try {
 			httpService.registerServlet(TestServlet.SERVLET_ALIAS,	new TestServlet("Test servlet"), null, null);
-		} catch (ServletException | NamespaceException e) {
+			httpService.registerServlet(ForwardServlet.SERVLET_ALIAS,	new ForwardServlet("Forward servlet"), null, null);
+		} catch (ServletException e) {
 			System.err.println("Servlet couldn't be registered: " + e.getMessage());
-		} 
+		} catch (NamespaceException e) {
+			System.err.println("Servlet couldn't be registered: " + e.getMessage());
+		}
 		return httpService;
 	}
 

@@ -3,6 +3,7 @@ package com.vbashur.bundle;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,6 +52,9 @@ public class TestServlet extends HttpServlet {
 
         out.println("Request = " + req);
         out.println("PathInfo = " + req.getPathInfo());
+        req.setAttribute("A", "OKAY");
+//        RequestDispatcher rd = getServletContext().getRequestDispatcher(ForwardServlet.SERVLET_ALIAS); // Looks like a bug
+//        rd.forward(req, res);
     }
 
     private void doLog(String message)
