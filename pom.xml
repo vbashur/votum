@@ -16,6 +16,10 @@
     <module>servletbridge</module>
     <module>servletbundle</module>
     <module>equinoxbridge</module>
+    <module>samplebridge</module>
+    <module>samplemanager</module>
+    <module>sampleservleta</module>
+    <module>sampleservletb</module>
   </modules>
 
 	 <properties>

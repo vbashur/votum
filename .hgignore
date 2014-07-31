@@ -19,5 +19,14 @@ bridge\
 equinoxbridge\
 Servers\
 RemoteSystemsTempFiles\
+samplebridge\.settings
+samplebridge\target
+samplemanager\.settings
+samplemanager\target
+sampleservleta\.settings
+sampleservleta\target
+sampleservletb\.settings
+sampleservletb\target
+
 
 
