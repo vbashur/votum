@@ -55,6 +55,10 @@ public class ForwardServlet extends HttpServlet {
         	out.println("no value");
         }
         doLog("Forwarded");        
+        getServletContext().log("Name: " + getServletConfig().getServletName());        
+        getServletContext().log("Context Name: " + getServletConfig().getServletContext().getServletContextName());
+        getServletContext().log("Server Info: " + getServletConfig().getServletContext().getServerInfo());
+        getServletContext().log("Context path: " + getServletConfig().getServletContext().getContextPath());
         
         
     }

@@ -14,6 +14,7 @@ import org.osgi.framework.Constants;
 public class ProvisionActivator implements BundleActivator {
 
 	private final static String B_PATH = "/WEB-INF/bundles/";
+//	private final static String B_PATH = "/WEB-INF/equinox/";
 
 	private final ServletContext servletContext;
 

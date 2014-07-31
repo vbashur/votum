@@ -2,9 +2,12 @@ package com.vbashur.bundle;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -53,8 +56,20 @@ public class TestServlet extends HttpServlet {
         out.println("Request = " + req);
         out.println("PathInfo = " + req.getPathInfo());
         req.setAttribute("A", "OKAY");
-//        RequestDispatcher rd = getServletContext().getRequestDispatcher(ForwardServlet.SERVLET_ALIAS); // Looks like a bug
-//        rd.forward(req, res);
+        String url = "";
+        Set keys = getServletContext().getServletRegistrations().keySet();
+        Iterator iter = keys.iterator();
+        while (iter.hasNext()) {
+			getServletContext().log("Registered2: " + iter.next());						
+		}
+        getServletContext().log("Name: " + getServletConfig().getServletName());
+        getServletContext().log("Context Name: " + getServletConfig().getServletContext().getServletContextName());
+        getServletContext().log("Server Info: " + getServletConfig().getServletContext().getServerInfo());
+        getServletContext().log("Context path: " + getServletConfig().getServletContext().getContextPath());
+        ServletContext sc = getServletContext().getContext("/servletbridge");
+        RequestDispatcher rd = sc.getRequestDispatcher("/forward");        
+//        RequestDispatcher rd = req.getRequestDispatcher(ForwardServlet.SERVLET_ALIAS); // Looks like a bug
+        rd.forward(req, res);
     }
 
     private void doLog(String message)
