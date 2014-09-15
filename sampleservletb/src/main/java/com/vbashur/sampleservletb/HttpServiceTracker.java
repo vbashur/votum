@@ -31,8 +31,7 @@ public class HttpServiceTracker extends ServiceTracker {
 			httpService.registerServlet("/bforwardc", new ModuleServletForwardToCommon(), null, null);
 			httpService.registerServlet("/bincludea", new ModuleServletIncludeA(), null, null);
 			httpService.registerServlet("/bforwards", new ModuleServletForwardToSpring(), null, null);
-//			httpService.registerServlet("/bc", new CommonServlet(), null, null);
-			
+//			httpService.registerServlet("/bc", new CommonServlet(), null, null);			
 		} catch (ServletException e) {
 			// TODO some error handling
 			e.printStackTrace();
