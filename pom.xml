@@ -14,12 +14,13 @@
     <module>osgiweb</module>
     <module>servletmain</module>
     <module>servletbridge</module>
-    <module>servletbundle</module>
-    <module>equinoxbridge</module>
+    <module>servletbundle</module>    
     <module>samplebridge</module>
     <module>samplemanager</module>
     <module>sampleservleta</module>
     <module>sampleservletb</module>
+    <module>vaadinapp</module>
+    <module>removeme</module>
   </modules>
 
 	 <properties>

@@ -17,6 +17,7 @@ osgiweb\
 sample.http\
 bridge\
 equinoxbridge\
+removeme\
 Servers\
 RemoteSystemsTempFiles\
 samplebridge\.settings
@@ -27,6 +28,8 @@ sampleservleta\.settings
 sampleservleta\target
 sampleservletb\.settings
 sampleservletb\target
+vaadinapp\.settings
+vaadinapp\target
 
 
 
