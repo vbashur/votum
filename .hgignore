@@ -30,6 +30,9 @@ sampleservletb\.settings
 sampleservletb\target
 vaadinapp\.settings
 vaadinapp\target
+dataaccess\target
+dataaccess\.settings
+
 
 
 
