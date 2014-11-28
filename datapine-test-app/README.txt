@@ -20,8 +20,5 @@ Credentials:
  User: login - user@domain.me, password - user
  
 Restrictions and known issues
- 1. Users created by Administrator has 'ROLE_USER' permissions by default - was implemented in that way for the sake of simplicity
- 2. Changing the password for user doesn't take an effect, by default the new password will be 'password'
- 3. Confirming user password change creates new browser window
- Points 2 and 3 are not business layer problems but UI implementation
+ - Users created by Administrator has 'ROLE_USER' permissions by default - was implemented in that way for the sake of simplicity
  
