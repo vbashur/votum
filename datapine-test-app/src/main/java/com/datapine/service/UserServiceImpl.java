@@ -22,10 +22,10 @@ import com.datapine.domain.User;
 public class UserServiceImpl implements UserService {
 
 	private static final Logger log = Logger.getLogger(UserServiceImpl.class);
-
+	
 	// prevents duplicate users creation
 	private Set<String> emailCache = new HashSet<String>();
-
+		
 	@Autowired
 	UserDAO userDAO;
 
@@ -49,11 +49,9 @@ public class UserServiceImpl implements UserService {
 			role.setRole(DEFAULT_USER_ROLE);
 			roleDAO.add(role);
 			emailCache.add(email);
-			log.info("User with email " + newUser.getEmail()
-					+ " is successfully registered");
+			log.info("User with email " + newUser.getEmail() + " is successfully registered");
 		} else {
-			log.warn("User with email " + email
-					+ " has been already registered");
+			log.warn("User with email " + email + " has been already registered");
 		}
 		return newUser;
 	}
@@ -66,14 +64,12 @@ public class UserServiceImpl implements UserService {
 			if (updatedUser != null) {
 				updatedUser.setPassword(newPassword);
 				userDAO.update(updatedUser);
-				log.info("User with email " + updatedUser.getEmail()
-						+ " is successfully updated");
+				log.info("User with email " + updatedUser.getEmail() + " is successfully updated");
 			}
-		} catch (NoResultException nre) {
+		} catch (NoResultException nre) { 
 			log.warn("User with Id " + userId + " is not registered");
 		} catch (NonUniqueResultException nre) {
-			log.warn("User with Id " + userId
-					+ " is not unique and cannot be processed");
+			log.warn("User with Id " + userId + " is not unique and cannot be processed");
 		}
 		return updatedUser;
 	}
@@ -83,11 +79,11 @@ public class UserServiceImpl implements UserService {
 		List<User> users = new LinkedList<User>();
 		emailCache.clear();
 		Iterator<User> iter = userDAO.findAllOrderById();
-		while (iter.hasNext()) {
+		while(iter.hasNext()) {
 			User user = iter.next();
 			users.add(user);
-			emailCache.add(user.getEmail());
-		}
+			emailCache.add(user.getEmail());		
+		}		
 		return users;
 	}
 
@@ -101,14 +97,13 @@ public class UserServiceImpl implements UserService {
 				roleDAO.delete(email);
 				userDAO.delete(userId);
 				emailCache.remove(email);
-				log.info("User with email " + email
-						+ " is successfully deleted");
+				log.info("User with email " + email + " is successfully deleted");
 			}
 		} catch (NoResultException nre) {
 			log.warn("Required user is not registered");
 		} catch (NonUniqueResultException nre) {
 			log.warn("Required user is not unique and cannot be processed");
 		}
-	}
+	}	
 
 }
