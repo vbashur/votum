@@ -8,7 +8,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import rewards.AccountContribution;
 import rewards.Dining;
@@ -20,6 +21,7 @@ import common.datetime.SimpleDate;
  * JDBC implementation of a reward repository that records the result of a reward transaction by inserting a reward
  * confirmation record.
  */
+@Repository
 public class JdbcRewardRepository implements RewardRepository {
 
 	private DataSource dataSource;
@@ -28,7 +30,7 @@ public class JdbcRewardRepository implements RewardRepository {
 	 * Sets the data source this repository will use to insert rewards.
 	 * @param dataSource the data source
 	 */
-	@Required
+	@Autowired(required=true)
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
