@@ -27,5 +27,6 @@
 
 	<!-- Replaces ${placeholders} with values in testdb.properties -->
 	<context:property-placeholder location="classpath:rewards/testdb/testdb.properties"/>
+	
 
 </beans>
