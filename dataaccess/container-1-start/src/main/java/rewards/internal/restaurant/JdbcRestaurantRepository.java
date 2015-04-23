@@ -11,8 +11,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Repository;
 
 import common.money.Percentage;
 
@@ -22,7 +23,9 @@ import common.money.Percentage;
  * This implementation caches restaurants to improve performance. The cache is populated on initialization and cleared
  * on destruction.
  */
+@Repository
 public class JdbcRestaurantRepository implements RestaurantRepository {
+
 
 	private DataSource dataSource;
 
@@ -36,7 +39,7 @@ public class JdbcRestaurantRepository implements RestaurantRepository {
 	 *
 	 * @param dataSource the data source
 	 */
-	@Required
+	@Autowired(required=true)
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
