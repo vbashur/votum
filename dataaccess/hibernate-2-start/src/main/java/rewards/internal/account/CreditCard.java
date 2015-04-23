@@ -11,11 +11,11 @@ public class CreditCard {
 
 	@Id
 	@Column(name = "ID")
-	@SuppressWarnings("unused")
 	private Integer entityId;
 
-	@Column(name = "NUMBER")
+	@Column(name = "NUMBER", unique = true)		
 	private String number;
+	
 
 	/**
 	 * Get the number if this credit-card.

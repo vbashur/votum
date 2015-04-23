@@ -1,5 +1,7 @@
 package rewards.internal.reward;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import rewards.AccountContribution;
 import rewards.Dining;
 import rewards.RewardConfirmation;
@@ -16,5 +18,6 @@ public interface RewardRepository {
 	 * @return a reward confirmation object that can be used for reporting and to lookup the reward details at a later
 	 * date
 	 */
+	@Transactional
 	public RewardConfirmation confirmReward(AccountContribution contribution, Dining dining);
 }

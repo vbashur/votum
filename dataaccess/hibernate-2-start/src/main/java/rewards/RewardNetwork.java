@@ -1,5 +1,8 @@
 package rewards;
 
+import org.springframework.transaction.annotation.Transactional;
+
+
 /**
  * Rewards a member account for dining at a restaurant.
  * 
@@ -24,5 +27,6 @@ public interface RewardNetwork {
 	 * @param dining a charge made to a credit card for dining at a restaurant
 	 * @return confirmation of the reward
 	 */
+	@Transactional
 	public RewardConfirmation rewardAccountFor(Dining dining);
 }

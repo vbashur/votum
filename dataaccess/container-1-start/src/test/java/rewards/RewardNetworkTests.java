@@ -23,6 +23,12 @@ public class RewardNetworkTests  {
 	
 	@Before
 	public void setUp() {
+		
+		//Uncomment to use xml configuration
+//		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
+//				"classpath:/rewards/internal/application-config.xml", 
+//				"classpath:/rewards/test-infrastructure-config.xml" });
+		
 		ApplicationContext context = 
 			      new AnnotationConfigApplicationContext(rewards.internal.ApplicationConfiguration.class);		
 		

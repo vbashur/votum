@@ -26,16 +26,17 @@ import common.money.Percentage;
 @Table(name = "T_ACCOUNT_BENEFICIARY")
 public class Beneficiary {
 
-	@Id
 	@Column(name = "ID")
-	@SuppressWarnings("unused")
+	@Id	 
 	private Integer entityId;
-
-	// TODO 2: Finish mapping the Beneficiary object
+	
+	@Column(name = "NAME", unique = true)
 	private String name;
 
+	@Column(name = "ALLOCATION_PERCENTAGE")
 	private BigDecimal allocationPercentage;
 
+	@Column(name = "SAVINGS")
 	private BigDecimal savings = new BigDecimal("0.00");
 
 	protected Beneficiary() {
