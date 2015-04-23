@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import common.money.MonetaryAmount;
 
@@ -23,10 +23,9 @@ public class RewardNetworkTests  {
 	
 	@Before
 	public void setUp() {
-		// Create the test configuration for the application from two files
-		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
-				"classpath:/rewards/internal/application-config.xml",
-				"classpath:/rewards/test-infrastructure-config.xml" });
+		ApplicationContext context = 
+			      new AnnotationConfigApplicationContext(rewards.internal.ApplicationConfiguration.class);		
+		
 		// Get the bean to use to invoke the application
 		rewardNetwork = context.getBean(RewardNetwork.class);
 	}
