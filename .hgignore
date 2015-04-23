@@ -32,6 +32,7 @@ vaadinapp\.settings
 vaadinapp\target
 dataaccess\target
 dataaccess\.settings
+datapine-test-app\target
 
 
 
