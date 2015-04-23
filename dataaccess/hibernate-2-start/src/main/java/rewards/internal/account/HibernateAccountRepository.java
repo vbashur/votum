@@ -23,7 +23,7 @@ public class HibernateAccountRepository implements AccountRepository {
 
 	/**
 	 * {@inheritDoc}
-	 */
+	 */	
 	public Account findByCreditCard(String creditCardNumber) {
 		Query query = getCurrentSession().createQuery(
 				"select a from Account a join a.creditCards c where c.number = ?");

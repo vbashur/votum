@@ -1,5 +1,8 @@
 package rewards.internal.account;
 
+import org.springframework.transaction.annotation.Transactional;
+
+
 /**
  * Loads account aggregates. Called by the reward network to find and reconstitute Account entities from an external
  * form such as a set of RDMS rows.
@@ -13,6 +16,7 @@ public interface AccountRepository {
 	 * @param creditCardNumber the credit card number
 	 * @return the account object
 	 */
+	@Transactional(readOnly = true)
 	public Account findByCreditCard(String creditCardNumber);
 
 }

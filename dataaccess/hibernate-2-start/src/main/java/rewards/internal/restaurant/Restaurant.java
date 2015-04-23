@@ -2,12 +2,13 @@ package rewards.internal.restaurant;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 import rewards.Dining;
 import rewards.internal.account.Account;
-
 import common.money.MonetaryAmount;
 import common.money.Percentage;
 
@@ -21,17 +22,22 @@ import common.money.Percentage;
 @Table(name = "T_RESTAURANT")
 public class Restaurant {
 
-	// TODO 3: Finish mapping the Restaurant object
+	@Column(name = "ID")
+	@Id		
 	private Integer entityId;
 
+	@Column(name = "MERCHANT_NUMBER", unique = true)
 	private String number;
 
+	@Column(name = "NAME")
 	private String name;
 
+	@Column(name = "BENEFIT_PERCENTAGE")
 	private BigDecimal benefitPercentage;
 
+	@Column(name = "BENEFIT_AVAILABILITY_POLICY")
 	private BenefitAvailabilityPolicy benefitAvailabilityPolicy;
-
+ 	
 	protected Restaurant() {
 		// Required by JPA
 	}

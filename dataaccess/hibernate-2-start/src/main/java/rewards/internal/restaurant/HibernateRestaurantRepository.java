@@ -1,5 +1,6 @@
 package rewards.internal.restaurant;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -18,9 +19,11 @@ public class HibernateRestaurantRepository implements RestaurantRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public Restaurant findByMerchantNumber(String merchantNumber) {
-		// TODO 4: Find and return a Restaurant based on its merchant number
-		throw new UnsupportedOperationException("Not yet implemented");
+	public Restaurant findByMerchantNumber(String merchantNumber) {					
+		Query query = getCurrentSession().createQuery(
+				"select r from Restaurant r where r.number = ?");		
+		query.setString(0, merchantNumber);
+		return (Restaurant) query.uniqueResult();
 	}
 
 	/**
