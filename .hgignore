@@ -33,7 +33,8 @@ vaadinapp\target
 dataaccess\target
 dataaccess\.settings
 datapine-test-app\target
-datapine-test-app\.settings
+dataaccess\container-1-start\target\
+dataaccess\hibernate-2-start\target\
 
 
 
