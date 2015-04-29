@@ -3,25 +3,28 @@ package com.vbashur.grava.game;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.vbashur.grava.Const;
+
 public class GameBoard {
 
 	protected Map<Integer, Integer> boardPitMap;
 
-	protected final static int DEFAULT_STONE_COUNT = 6;
-
-	protected final static int DEFAULT_PIT_NUM = 6;
-
-	protected final static int GRAVA_INDEX = 0;
-
+	protected GravaArbiter arbiter;
+	
+	public GameBoard(GravaArbiter gravaArbiter) {
+		arbiter = gravaArbiter;
+		initPitMap();
+	}
+	
 	public void initPitMap() {
 		if (boardPitMap == null) {
-			boardPitMap = new HashMap<>();
+			boardPitMap = new HashMap<Integer, Integer>();
 		} else {
 			boardPitMap.clear();
 		}
-		boardPitMap.put(GRAVA_INDEX, 0);
-		for (int iter = 1; iter <= DEFAULT_PIT_NUM; ++iter) {
-			boardPitMap.put(iter, DEFAULT_STONE_COUNT);
+		boardPitMap.put(Const.GRAVA_INDEX, 0);
+		for (int iter = 1; iter <= Const.DEFAULT_PIT_NUM; ++iter) {
+			boardPitMap.put(iter, Const.DEFAULT_STONE_COUNT);
 		}
 	}
 
@@ -32,8 +35,7 @@ public class GameBoard {
 	}
 
 	public void grabStones(Integer grabFromIndex) {
-
-		// TODO observer
+		arbiter.grabOppositeStones(this, grabFromIndex);
 	}
 
 	public void makeTurn(Integer startIndex) {
@@ -58,10 +60,8 @@ public class GameBoard {
 			} else {
 				Integer stonesRemain = boardPitMap.get(lastIndex);
 				if (stonesRemain == 0) {
-					int gravaStones = boardPitMap.get(GRAVA_INDEX);
-					boardPitMap.put(GRAVA_INDEX, ++gravaStones);
-					// TODO observer must say about grabbing stones from
-					// opposite player
+					addGravaStones(1);
+					grabStones(lastIndex);
 				}
 			}
 			checkGrava();
@@ -69,14 +69,19 @@ public class GameBoard {
 	}
 
 	public Integer getGravaStones() {
-		return boardPitMap.get(GRAVA_INDEX);
-
+		return boardPitMap.get(Const.GRAVA_INDEX);
+	}
+	
+	public void addGravaStones(Integer count) {
+		Integer currStonesCount = getGravaStones();
+		currStonesCount += count;
+		boardPitMap.put(Const.GRAVA_INDEX, currStonesCount);
 	}
 
 	private void checkGrava() {
 		boolean isCompleted = true;
 		Integer iter = 1;
-		while (isCompleted && iter <= DEFAULT_PIT_NUM) {
+		while (isCompleted && iter <= Const.DEFAULT_PIT_NUM) {
 			Integer stoneNum = boardPitMap.get(iter);
 			if (stoneNum != 0) {
 				isCompleted = false;
