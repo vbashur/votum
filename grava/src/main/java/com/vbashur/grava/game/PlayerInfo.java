@@ -2,8 +2,6 @@ package com.vbashur.grava.game;
 
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import com.vbashur.grava.Player;
 import com.vbashur.grava.ui.PlayerComponent;
 
@@ -46,40 +44,6 @@ public class PlayerInfo {
 	public void refreshComponent() {
 		Map<Integer, Integer> stateMap = gameBoard.getPits();
 		playerComponent.updateState(stateMap);
-	}
-	
-	@PostConstruct
-	public void init() {
-	
-	}
-	
-	
-	
-//	
-//	public void grabOppositeStones(GameBoard target, int index) {
-//		if (target.equals(gameBoardA)) {
-//			Integer grabbedStones = gameBoardB.giveStones(index);
-//			gameBoardA.addGravaStones(grabbedStones);
-//		} else {
-//			Integer grabbedStones = gameBoardA.giveStones(index);
-//			gameBoardB.addGravaStones(grabbedStones);						
-//		}
-//	}
-
-
-//	@Override
-//	public void onApplicationEvent(OnCapturingStone event) {
-//		GameBoard target = (GameBoard)event.getSource();
-//		int index = event.getIndex();
-//		if (target.equals(gameBoardA)) {
-//			Integer grabbedStones = gameBoardB.giveStones(index);
-//			gameBoardA.addGravaStones(grabbedStones);
-//		} else {
-//			Integer grabbedStones = gameBoardA.giveStones(index);
-//			gameBoardB.addGravaStones(grabbedStones);						
-//		}		
-//	}
-
-	
+	}		
 	
 }

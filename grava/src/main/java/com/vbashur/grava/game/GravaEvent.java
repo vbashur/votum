@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEvent;
 
 import com.vbashur.grava.Player;
 
+@SuppressWarnings("serial")
 public abstract class GravaEvent extends ApplicationEvent {
 
 	public GravaEvent(Object source) {

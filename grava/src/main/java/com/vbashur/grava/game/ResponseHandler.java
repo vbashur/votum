@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vbashur.grava.Player;
+import com.vbashur.grava.Utils;
 
 @Service
 public class ResponseHandler implements ApplicationListener<GravaEvent> {
@@ -44,16 +45,19 @@ public class ResponseHandler implements ApplicationListener<GravaEvent> {
 			}
 
 		} else if (event.getClass().equals(GravaEvent.OnCapturingStone.class)) {
-			Integer pitIndex = ((GravaEvent.OnCapturingStone) event).getIndex();
+			Integer targetPit = ((GravaEvent.OnCapturingStone) event).getIndex();
+			Integer pitIndex = Utils.getOpponentPitIndex(targetPit); 
+			Integer stonesToGrab = 0;
 			if (event.getPlayer() == playerA.getPlayer()) {
-				Integer stonesToGrab = playerB.giveStones(pitIndex);
+				stonesToGrab = playerB.giveStones(pitIndex);
 				playerA.grabStones(stonesToGrab);
 			} else {
-				Integer stonesToGrab = playerA.giveStones(pitIndex);
+				stonesToGrab = playerA.giveStones(pitIndex);
 				playerB.grabStones(stonesToGrab);
 			}
 			playerA.refreshComponent();
 			playerB.refreshComponent();
+			Notification.show(event.getPlayer().getName() + " captures " + stonesToGrab, Type.TRAY_NOTIFICATION);
 
 		} else if (event.getClass().equals(GravaEvent.OnMakingOneMoreTurn.class)) {
 			refresh(event.getPlayer());

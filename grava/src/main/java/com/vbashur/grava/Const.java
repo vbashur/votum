@@ -7,5 +7,7 @@ public interface Const {
 	final static int DEFAULT_PIT_NUM = 6;
 
 	final static int GRAVA_INDEX = 0;
+	
+	final static int DEFAULT_WIDTH = 62;
 
 }
