@@ -28,8 +28,9 @@ public class PlayerComponent extends CustomComponent {
 
 	private Player player;
 
-	public PlayerComponent(Player p) {
+	public PlayerComponent(Player p, GravaArbiter arb) {
 		player = p;
+		arbiter = arb;
 	}
 
 	private List<Entry<Button, Integer>> buttonIndexPair;
@@ -63,7 +64,7 @@ public class PlayerComponent extends CustomComponent {
 						
 						@Override
 						public void buttonClick(ClickEvent event) {
-							arbiter.makeTurn(this, player, buttonIndex);							
+							arbiter.makeTurn(player, buttonIndex);							
 						}
 					});					
 				}
@@ -84,7 +85,7 @@ public class PlayerComponent extends CustomComponent {
 						
 						@Override
 						public void buttonClick(ClickEvent event) {
-							arbiter.makeTurn(this, player, buttonIndex);							
+							arbiter.makeTurn(player, buttonIndex);							
 						}
 					});	
 				}

@@ -8,9 +8,11 @@ public abstract class GravaEvent extends ApplicationEvent {
 
 	public GravaEvent(Object source) {
 		super(source);
-		// TODO Auto-generated constructor stub
 	}
 	
+	public Player getPlayer() {
+		return (Player)this.source;
+	}
 	
 	public static class OnCapturingStone extends GravaEvent {
 
@@ -34,24 +36,32 @@ public abstract class GravaEvent extends ApplicationEvent {
 	}
 	
 	public static class OnMakingTurn extends GravaEvent {
-
-		private Player player;
-		
+				
 		private Integer pitIndex; 
 		
-		public OnMakingTurn(Object source, Player pl, Integer index) {
-			super(source);			
-			this.player = pl;
+		public OnMakingTurn(Object source, Integer index) {
+			super(source);					
 			this.pitIndex = index;						
-		}				
-		
-		public Player getPlayer() {
-			return this.player;
-		}
+		}					
 		
 		public Integer getPit() {
 			return this.pitIndex;
 		}
 	}
+	
+	public static class OnMakingOneMoreTurn extends GravaEvent {
+		
+		public OnMakingOneMoreTurn(Object source) {
+			super(source);
+		}
+	}
+	
+	public static class OnFinishTurn extends GravaEvent {
+		
+		public OnFinishTurn(Object source) {
+			super(source);
+		}
+	}
+
 
 }

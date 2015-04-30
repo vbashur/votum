@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.vbashur.grava.Const;
+import com.vbashur.grava.Player;
 
 public class GameBoard {
 
@@ -11,8 +12,11 @@ public class GameBoard {
 
 	protected GravaArbiter arbiter;
 	
-	public GameBoard(GravaArbiter gravaArbiter) {
+	protected Player player;
+	
+	public GameBoard(Player p, GravaArbiter gravaArbiter) {
 		arbiter = gravaArbiter;
+		player = p;
 		initPitMap();
 	}
 	
@@ -34,10 +38,6 @@ public class GameBoard {
 		return items;
 	}
 
-	public void grabStones(Integer grabFromIndex) {
-		arbiter.grabOppositeStones(this, grabFromIndex);
-	}
-
 	public void makeTurn(Integer startIndex) {
 		Integer stones = boardPitMap.get(startIndex);
 		if (stones > 0) {
@@ -56,20 +56,32 @@ public class GameBoard {
 
 			int lastIndex = tmpIndex % boardPitMap.size();
 			if (lastIndex == 0) {
-				// TODO observer must say about another turn
+				if (isGameCompeted()) {
+					arbiter.showWinner(player);					
+				} else {
+					arbiter.makeOneMoreTurn(player);
+				}
 			} else {
 				Integer stonesRemain = boardPitMap.get(lastIndex);
 				if (stonesRemain == 0) {
 					addGravaStones(1);
-					grabStones(lastIndex);
+					arbiter.grabOppositeStones(this.player, lastIndex);
 				}
-			}
-			checkGrava();
+				if (isGameCompeted()) {
+					arbiter.showWinner(player);					
+				} else {
+					arbiter.finishTurn(player);
+				}
+			}			
 		}
 	}
 
 	public Integer getGravaStones() {
 		return boardPitMap.get(Const.GRAVA_INDEX);
+	}
+	
+	public Map<Integer, Integer> getPits() {
+		return boardPitMap;
 	}
 	
 	public void addGravaStones(Integer count) {
@@ -78,7 +90,7 @@ public class GameBoard {
 		boardPitMap.put(Const.GRAVA_INDEX, currStonesCount);
 	}
 
-	private void checkGrava() {
+	private boolean isGameCompeted() {
 		boolean isCompleted = true;
 		Integer iter = 1;
 		while (isCompleted && iter <= Const.DEFAULT_PIT_NUM) {
@@ -89,9 +101,6 @@ public class GameBoard {
 				iter += 1;
 			}
 		}
-		if (isCompleted) {
-			// TODO observer for checking who has more stones
-		}
+		return isCompleted;			
 	}
-
 }
