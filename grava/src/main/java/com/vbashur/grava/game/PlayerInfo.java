@@ -1,53 +1,49 @@
 package com.vbashur.grava.game;
 
-import javax.annotation.PostConstruct;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Service;
+import com.vbashur.grava.Player;
+import com.vbashur.grava.ui.PlayerComponent;
 
-import com.vbashur.grava.game.GravaEvent.OnCapturingStone;
 
-@Service
-public class PlayerInfo implements ApplicationListener<GravaEvent.OnCapturingStone> {
+public class PlayerInfo {
 	
-	@Autowired
-	private GravaArbiter gravaArbiter;
+	private Player player;
+	
+	private GameBoard gameBoard;
+	
+	private PlayerComponent playerComponent;
 
-	private GameBoard gameBoardA;
 	
-	private GameBoard gameBoardB;
-	
-	@PostConstruct
-	public void init() {
-		gameBoardA = new GameBoard(gravaArbiter);
-		gameBoardB = new GameBoard(gravaArbiter);
+	public PlayerInfo(Player p, GravaArbiter arbiter) {
+		this.player = p;
+		this.playerComponent = new PlayerComponent(p, arbiter);
+		this.gameBoard = new GameBoard(p, arbiter);
 	}
 	
-//	
-//	public void grabOppositeStones(GameBoard target, int index) {
-//		if (target.equals(gameBoardA)) {
-//			Integer grabbedStones = gameBoardB.giveStones(index);
-//			gameBoardA.addGravaStones(grabbedStones);
-//		} else {
-//			Integer grabbedStones = gameBoardA.giveStones(index);
-//			gameBoardB.addGravaStones(grabbedStones);						
-//		}
-//	}
-
-
-	@Override
-	public void onApplicationEvent(OnCapturingStone event) {
-		GameBoard target = (GameBoard)event.getSource();
-		int index = event.getIndex();
-		if (target.equals(gameBoardA)) {
-			Integer grabbedStones = gameBoardB.giveStones(index);
-			gameBoardA.addGravaStones(grabbedStones);
-		} else {
-			Integer grabbedStones = gameBoardA.giveStones(index);
-			gameBoardB.addGravaStones(grabbedStones);						
-		}		
+	public PlayerComponent getPlayerComponent() {
+		return this.playerComponent;
 	}
 	
+	public Player getPlayer() {
+		return this.player;
+	}
+	
+	public void makeTurn(Integer startIndex) {
+		this.gameBoard.makeTurn(startIndex);
+	}
+	
+	public Integer giveStones(Integer pitIndex) {
+		return this.gameBoard.giveStones(pitIndex);
+	}
+	
+	public void grabStones(Integer stonesNum) {
+		this.gameBoard.addGravaStones(stonesNum);
+	}
+	
+	public void refreshComponent() {
+		Map<Integer, Integer> stateMap = gameBoard.getPits();
+		playerComponent.updateState(stateMap);
+	}		
 	
 }

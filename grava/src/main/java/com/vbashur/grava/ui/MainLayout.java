@@ -1,100 +1,61 @@
 package com.vbashur.grava.ui;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vbashur.grava.Player;
-import com.vbashur.grava.game.GravaEvent;
+import com.vbashur.grava.game.GravaArbiter;
+import com.vbashur.grava.game.PlayerInfo;
+import com.vbashur.grava.game.ResponseHandler;
 
 @SpringUI
-public class MainLayout extends UI implements ApplicationEventPublisherAware {
+@PreserveOnRefresh
+public class MainLayout extends UI {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private ApplicationEventPublisher eventPublisher;
 
-	private PlayerComponent playerA;
-	
-	private PlayerComponent playerB;
-	
-static int iterGlobal = 0;
+	@Autowired
+	private GravaArbiter gravaArbiter;
+
+	@Autowired
+	private ResponseHandler respHandler;
+
 	@Override
 	protected void init(VaadinRequest request) {
-		Button but = new Button("Click it!");
-		playerA = new PlayerComponent(Player.SPOUNGE_BOB);
-		playerB = new PlayerComponent(Player.PATRICK_STAR);
-		
-		Map<Integer, Integer> m = new HashMap<>();
-		m.put(0,0);
-		m.put(1,1);
-		m.put(2,2);
-		m.put(3,3);
-		m.put(4,4);
-		m.put(5,5);
-		m.put(6,6);
-		
-		but.addClickListener(new ClickListener() {
-			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				
-				
-				if (iterGlobal % 2 == 0) {
-					playerB.setEnabled(false);
-					playerA.updateState(m);					
-				} else {
-					playerB.updateState(m);
-					playerA.setEnabled(false);
-					
-				}
-				for (int iter1 = 0; iter1 < m.size(); ++iter1) {
-					int val = m.get(iter1);
-					val += iterGlobal;
-					m.put(iter1, val);
-							
-				}
-				iterGlobal += 1;
-//				eventPublisher.publishEvent(new GravaEvent.OnCapturingStone("hui", 1));
-				System.out.println("hi");
-				
-			}
-		});
-		
 		VerticalLayout vl = new VerticalLayout();
 		vl.setMargin(true);
 		vl.setWidth(100, Unit.PERCENTAGE);
 		vl.setHeight(100, Unit.PERCENTAGE);
-		
-		Label caption = new Label("Grava Hal Application");
-		vl.addComponent(caption);
-		vl.addComponent(but);
-		vl.addComponent(playerA);
-		vl.addComponent(playerB);
-		setContent(vl);
-	}
 
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-		this.eventPublisher = applicationEventPublisher;		
+		Label caption = new Label("<b>Grava Hal - Bikini Bottom Edition</b>", ContentMode.HTML);
+		vl.addComponent(caption);
+
+		PlayerInfo playerA = new PlayerInfo(Player.SPOUNGE_BOB, gravaArbiter);
+		PlayerInfo playerB = new PlayerInfo(Player.PATRICK_STAR, gravaArbiter);
+		
+		respHandler.registerPlayers(playerA, playerB);
+
+		vl.addComponent(playerA.getPlayerComponent());
+		vl.addComponent(playerB.getPlayerComponent());
+		vl.setExpandRatio(playerB.getPlayerComponent(), 1.0f);
+		playerA.refreshComponent();
+		playerB.refreshComponent();
+		playerB.getPlayerComponent().setEnabled(false);
+		Notification.show(playerA.getPlayer().getName() + ", please start the game", Type.HUMANIZED_MESSAGE);
+
+		setContent(vl);
 	}
 
 }
