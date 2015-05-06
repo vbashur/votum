@@ -4,12 +4,14 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.vbashur.grava.game.BroadcastEvent;
+
 public class Broadcaster {
 
 	static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	public interface BroadcastListener {
-		void receiveBroadcast(String message);
+		void receiveBroadcast(BroadcastEvent bce);
 	}
 
 	private static LinkedList<BroadcastListener> listeners = new LinkedList<BroadcastListener>();
@@ -22,12 +24,12 @@ public class Broadcaster {
 		listeners.remove(listener);
 	}
 
-	public static synchronized void broadcast(final String message) {
+	public static synchronized void broadcast(final BroadcastEvent bce) {
 		for (final BroadcastListener listener : listeners)
 			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
-					listener.receiveBroadcast(message);
+					listener.receiveBroadcast(bce);
 				}
 			});
 	}
