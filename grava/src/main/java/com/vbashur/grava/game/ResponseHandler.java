@@ -7,41 +7,46 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vbashur.grava.Player;
 import com.vbashur.grava.Utils;
+import com.vbashur.grava.ui.Broadcaster;
 
 @Service
+//@Scope("prototype")
 public class ResponseHandler implements ApplicationListener<GravaEvent> {
 
 	private PlayerInfo playerA;
 
 	private PlayerInfo playerB;
-
-	public void registerPlayers(PlayerInfo player1, PlayerInfo player2) {
+	
+//	@Autowired
+	private PlayerInfoHolder playerInfoHolder;
+		
+	public void registerPlayers(PlayerInfo player1, PlayerInfo player2, PlayerInfoHolder holder) {
 		if (player1 == null || player2 == null || player1 == player2) {
 			throw new UnsupportedOperationException("Unable to register players");
 		}
 		this.playerA = player1;
-		this.playerB = player2;
-	}
-
+		this.playerB = player2;		
+		this.playerInfoHolder = holder;
+	}	
+	
 	@Override
 	public void onApplicationEvent(GravaEvent event) {
-
+			
 		if (event.getClass().equals(GravaEvent.OnMakingTurn.class)) {
 			Integer pitIndex = ((GravaEvent.OnMakingTurn) event).getPit();
 			if (event.getPlayer() == playerA.getPlayer()) {
 				playerA.makeTurn(pitIndex);
 			} else {
 				playerB.makeTurn(pitIndex);
-			}
+			}			
 
 		} else if (event.getClass().equals(GravaEvent.OnFinishTurn.class)) {
+			Broadcaster.broadcast(event.getPlayer().getName());
 			refresh(event.getPlayer());
 			if (event.getPlayer() == playerA.getPlayer()) {
-				playerA.getPlayerComponent().setEnabled(false);
-				playerB.getPlayerComponent().setEnabled(true);
+				playerInfoHolder.changeTurn(playerA.getPlayer(), playerB.getPlayer());				
 			} else {
-				playerA.getPlayerComponent().setEnabled(true);
-				playerB.getPlayerComponent().setEnabled(false);
+				playerInfoHolder.changeTurn(playerB.getPlayer(), playerA.getPlayer());
 			}
 
 		} else if (event.getClass().equals(GravaEvent.OnCapturingStone.class)) {
@@ -55,8 +60,8 @@ public class ResponseHandler implements ApplicationListener<GravaEvent> {
 				stonesToGrab = playerA.giveStones(pitIndex);
 				playerB.grabStones(stonesToGrab);
 			}
-			playerA.refreshComponent();
-			playerB.refreshComponent();
+			playerInfoHolder.updatePlayerComponent(playerA.getPlayer(), playerA.refreshComponentValue());
+			playerInfoHolder.updatePlayerComponent(playerB.getPlayer(), playerB.refreshComponentValue());			
 			Notification.show(event.getPlayer().getName() + " captures " + stonesToGrab, Type.TRAY_NOTIFICATION);
 
 		} else if (event.getClass().equals(GravaEvent.OnMakingOneMoreTurn.class)) {
@@ -72,10 +77,12 @@ public class ResponseHandler implements ApplicationListener<GravaEvent> {
 
 	public void refresh(Player player) {
 		if (player == playerA.getPlayer()) {
-			playerA.refreshComponent();
+			playerInfoHolder.updatePlayerComponent(playerA.getPlayer(), playerA.refreshComponentValue());						
 		} else {
-			playerB.refreshComponent();
-		}
+			playerInfoHolder.updatePlayerComponent(playerB.getPlayer(), playerB.refreshComponentValue());
+			
+		}		
 	}
 
+	
 }

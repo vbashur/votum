@@ -15,14 +15,19 @@ public class PlayerInfo {
 	private PlayerComponent playerComponent;
 
 	
-	public PlayerInfo(Player p, GravaArbiter arbiter) {
+	public PlayerInfo(Player p, GravaArbiter arbiter, GameBoard gb) {
 		this.player = p;
-		this.playerComponent = new PlayerComponent(p, arbiter);
-		this.gameBoard = new GameBoard(p, arbiter);
+//		this.playerComponent = new PlayerComponent(p, arbiter);
+		this.gameBoard = gb;
+	}
+	
+	public PlayerComponent initPlayerComponent() {
+		this.playerComponent = new PlayerComponent(player, this.gameBoard.arbiter);
+		return this.playerComponent;
 	}
 	
 	public PlayerComponent getPlayerComponent() {
-		return this.playerComponent;
+		return this.playerComponent;		
 	}
 	
 	public Player getPlayer() {
@@ -45,5 +50,18 @@ public class PlayerInfo {
 		Map<Integer, Integer> stateMap = gameBoard.getPits();
 		playerComponent.updateState(stateMap);
 	}		
+	
+	public Map<Integer, Integer> refreshComponentValue() {
+		return gameBoard.getPits();		
+	}
+	
+	public Map<Integer, Integer> resetComponentValue() {
+		return gameBoard.initPitMap();
+	}
+	
+	public void reset() {		
+		Map<Integer, Integer> stateMap = gameBoard.initPitMap();
+		playerComponent.updateState(stateMap);	
+	}
 	
 }
