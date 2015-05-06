@@ -20,7 +20,7 @@ public class GameBoard {
 		initPitMap();
 	}
 	
-	public void initPitMap() {
+	public  Map<Integer, Integer> initPitMap() {
 		if (boardPitMap == null) {
 			boardPitMap = new HashMap<Integer, Integer>();
 		} else {
@@ -30,6 +30,7 @@ public class GameBoard {
 		for (int iter = 1; iter <= Const.DEFAULT_PIT_NUM; ++iter) {
 			boardPitMap.put(iter, Const.DEFAULT_STONE_COUNT);
 		}
+		return boardPitMap;
 	}
 
 	public Integer giveStones(Integer targetIndex) {
@@ -56,9 +57,10 @@ public class GameBoard {
 
 			int lastIndex = tmpIndex % boardPitMap.size();
 			if (lastIndex == 0) {
+				addGravaStones(1);
 				if (isGameCompeted()) {
 					arbiter.showWinner(player);					
-				} else {
+				} else {					
 					arbiter.makeOneMoreTurn(player);
 				}
 			} else {
@@ -66,12 +68,17 @@ public class GameBoard {
 				if (stonesRemain == 0) {
 					addGravaStones(1);
 					arbiter.grabOppositeStones(this.player, lastIndex);
-				}
-				if (isGameCompeted()) {
-					arbiter.showWinner(player);					
+					if (isGameCompeted()) {
+						arbiter.showWinner(player);					
+					} else {
+						arbiter.finishTurn(player);
+					}
 				} else {
+					int currentValue = boardPitMap.get(lastIndex);
+					boardPitMap.put(lastIndex, ++currentValue);
 					arbiter.finishTurn(player);
 				}
+				
 			}			
 		}
 	}
