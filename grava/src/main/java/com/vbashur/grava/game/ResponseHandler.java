@@ -3,21 +3,17 @@ package com.vbashur.grava.game;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vbashur.grava.Player;
 import com.vbashur.grava.Utils;
 import com.vbashur.grava.ui.Broadcaster;
 
 @Service
-//@Scope("prototype")
 public class ResponseHandler implements ApplicationListener<GravaEvent> {
 
 	private PlayerInfo playerA;
 
 	private PlayerInfo playerB;
 	
-//	@Autowired
 	private PlayerInfoHolder playerInfoHolder;
 		
 	public void registerPlayers(PlayerInfo player1, PlayerInfo player2, PlayerInfoHolder holder) {
@@ -31,29 +27,25 @@ public class ResponseHandler implements ApplicationListener<GravaEvent> {
 	
 	@Override
 	public void onApplicationEvent(GravaEvent event) {
-			
+		Player player = event.getPlayer();
 		if (event.getClass().equals(GravaEvent.OnMakingTurn.class)) {
 			Integer pitIndex = ((GravaEvent.OnMakingTurn) event).getPit();
-			if (event.getPlayer() == playerA.getPlayer()) {
+			if (player == playerA.getPlayer()) {
 				playerA.makeTurn(pitIndex);
 			} else {
 				playerB.makeTurn(pitIndex);
 			}			
 
-		} else if (event.getClass().equals(GravaEvent.OnFinishTurn.class)) {
-			Broadcaster.broadcast(event.getPlayer().getName());
-			refresh(event.getPlayer());
-			if (event.getPlayer() == playerA.getPlayer()) {
-				playerInfoHolder.changeTurn(playerA.getPlayer(), playerB.getPlayer());				
-			} else {
-				playerInfoHolder.changeTurn(playerB.getPlayer(), playerA.getPlayer());
-			}
+		} else if (event.getClass().equals(GravaEvent.OnFinishTurn.class)) {				
+			refresh(player);
+			playerInfoHolder.changeTurn(player, player.getOpposite());			
+			Broadcaster.broadcast(new BroadcastEvent.OnFinishTurn(event.getPlayer()));
 
 		} else if (event.getClass().equals(GravaEvent.OnCapturingStone.class)) {
 			Integer targetPit = ((GravaEvent.OnCapturingStone) event).getIndex();
 			Integer pitIndex = Utils.getOpponentPitIndex(targetPit); 
 			Integer stonesToGrab = 0;
-			if (event.getPlayer() == playerA.getPlayer()) {
+			if (player == playerA.getPlayer()) {
 				stonesToGrab = playerB.giveStones(pitIndex);
 				playerA.grabStones(stonesToGrab);
 			} else {
@@ -61,16 +53,22 @@ public class ResponseHandler implements ApplicationListener<GravaEvent> {
 				playerB.grabStones(stonesToGrab);
 			}
 			playerInfoHolder.updatePlayerComponent(playerA.getPlayer(), playerA.refreshComponentValue());
-			playerInfoHolder.updatePlayerComponent(playerB.getPlayer(), playerB.refreshComponentValue());			
-			Notification.show(event.getPlayer().getName() + " captures " + stonesToGrab, Type.TRAY_NOTIFICATION);
-
+			playerInfoHolder.updatePlayerComponent(playerB.getPlayer(), playerB.refreshComponentValue());	
+			Broadcaster.broadcast(new BroadcastEvent.OnCapturing(player, stonesToGrab));
+			
 		} else if (event.getClass().equals(GravaEvent.OnMakingOneMoreTurn.class)) {
-			refresh(event.getPlayer());
-			Notification.show(event.getPlayer().getName() + " has one more turn", Type.TRAY_NOTIFICATION);
-
+			refresh(player);
+			Broadcaster.broadcast(new BroadcastEvent.OnOneMoreTurn(player));
+			
 		} else if (event.getClass().equals(GravaEvent.OnFinishingGame.class)) {
-			Notification.show(event.getPlayer().getName() + " won! Game over. ", Type.TRAY_NOTIFICATION);
-
+			
+			if (playerA.getStones() > playerB.getStones()) {
+				Broadcaster.broadcast(new BroadcastEvent.OnFinishing(playerA.getPlayer(), playerA.getStones()));
+			} else if (playerB.getStones() > playerA.getStones()) {
+				Broadcaster.broadcast(new BroadcastEvent.OnFinishing(playerB.getPlayer(), playerB.getStones()));
+			} else if (playerB.getStones() == playerA.getStones()) {
+				Broadcaster.broadcast(new BroadcastEvent.OnFinishing(player, playerB.getStones())); // wins the first who put all the stones to grava
+			}
 		}
 
 	}

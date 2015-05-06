@@ -14,7 +14,6 @@ import com.vaadin.server.ClientConnector.AttachEvent;
 import com.vaadin.server.ClientConnector.AttachListener;
 import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.server.ClientConnector.DetachListener;
-import com.vaadin.server.Page;
 import com.vbashur.grava.Player;
 import com.vbashur.grava.ui.PlayerComponent;
 
@@ -30,8 +29,6 @@ public class PlayerInfoHolder {
 
 	private static Map<Player, Set<PlayerComponent>> playerComponents;
 	
-	private static Set<Page> pageSet;
-
 	public GameBoard getGameBoardA() {
 		return gameBoardA;
 	}
@@ -49,23 +46,21 @@ public class PlayerInfoHolder {
 		gameBoardA = new GameBoard(Player.SPOUNGE_BOB, gravaArbiter);
 		gameBoardB = new GameBoard(Player.PATRICK_STAR, gravaArbiter);
 		playerComponents = new HashMap<Player, Set<PlayerComponent>>();
-		pageSet = new HashSet<Page>();
 	}
 
 	public PlayerInfo getPlayerA() {
-		return new PlayerInfo(Player.SPOUNGE_BOB, gravaArbiter, gameBoardA);
+		return new PlayerInfo(Player.SPOUNGE_BOB, gameBoardA);
 	}
 
 	public PlayerInfo getPlayerB() {
-		return new PlayerInfo(Player.PATRICK_STAR, gravaArbiter, gameBoardB);
+		return new PlayerInfo(Player.PATRICK_STAR, gameBoardB);
 	}
 
-	public void registerPlayerComponent(Player player, PlayerComponent playerComponent, Page page) {
+	public void registerPlayerComponent(Player player, PlayerComponent playerComponent) {
 		ComponentAttachListener attachListener = new ComponentAttachListener(player, playerComponent);
 		ComponentDetachListener detachListener = new ComponentDetachListener(player, playerComponent);
 		playerComponent.addAttachListener(attachListener);
 		playerComponent.addDetachListener(detachListener);
-		pageSet.add(page);
 	}
 
 	public void updatePlayerComponent(Player player, Map<Integer, Integer> stateMap) {

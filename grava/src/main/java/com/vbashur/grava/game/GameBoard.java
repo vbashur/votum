@@ -87,6 +87,14 @@ public class GameBoard {
 		return boardPitMap.get(Const.GRAVA_INDEX);
 	}
 	
+	public Integer collectAllStones() {
+		Integer allStones = 0;
+		for(Integer stones : boardPitMap.values()) {
+			allStones += stones;
+		}
+		return allStones;
+	}
+	
 	public Map<Integer, Integer> getPits() {
 		return boardPitMap;
 	}

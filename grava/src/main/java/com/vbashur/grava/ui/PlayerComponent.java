@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.vaadin.annotations.Push;
 import com.vaadin.server.ClassResource;
-import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -15,11 +13,12 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vbashur.grava.Const;
 import com.vbashur.grava.Player;
 import com.vbashur.grava.game.GravaArbiter;
 
-@Push(transport = Transport.LONG_POLLING)
 public class PlayerComponent extends CustomComponent {
 
 	/**
@@ -32,6 +31,8 @@ public class PlayerComponent extends CustomComponent {
 	private GridLayout grid;
 
 	private Player player;
+	
+	private static int jokeCounter = 0;
 
 	public PlayerComponent(Player p, GravaArbiter arb) {
 		player = p;
@@ -62,7 +63,7 @@ public class PlayerComponent extends CustomComponent {
 				Button b = new Button();
 				b.setImmediate(true);
 				if (iter == 0) {
-//					b.setEnabled(false);
+					b.addClickListener(new JokeClickListener());
 					b.setIcon(new ClassResource("/static/img/ico_valid.png"), "grava");
 					b.setWidth(Const.DEFAULT_WIDTH, Unit.PIXELS);
 					buttonIndexPair.add(new java.util.AbstractMap.SimpleEntry<>(b, 0));
@@ -78,21 +79,17 @@ public class PlayerComponent extends CustomComponent {
 				}
 				grid.addComponent(b, iter, 1);
 				
-			}
-			Image bobImage = new Image();
-			bobImage.setSource(new ClassResource("/static/img/spoungebob.png"));
-//			grid.addComponent(bobImage, Const.DEFAULT_PIT_NUM + 1, 0,Const.DEFAULT_PIT_NUM + 1, 1);
+			}			
+			grid.addComponent(player.getImage(), Const.DEFAULT_PIT_NUM + 1, 0,Const.DEFAULT_PIT_NUM + 1, 1);
 
-		} else {
-			Image patrickImage = new Image();
-			patrickImage.setSource(new ClassResource("/static/img/patrick.png"));
-//			grid.addComponent(patrickImage, 0, 0, 0, 1);
+		} else {			
+			grid.addComponent(player.getImage(), 0, 0, 0, 1);
 			for (int iter = 1; iter <= Const.DEFAULT_PIT_NUM + 1; ++iter) {
 				Button b = new Button();
 				b.setImmediate(true);
 				final int buttonIndex = iter;
 				if (iter == Const.DEFAULT_PIT_NUM + 1) {
-//					b.setEnabled(false);
+					b.addClickListener(new JokeClickListener());
 					b.setIcon(new ClassResource("/static/img/ico_valid.png"), "grava");
 					b.setWidth(Const.DEFAULT_WIDTH, Unit.PIXELS);
 					buttonIndexPair.add(new java.util.AbstractMap.SimpleEntry<>(b, 0));
@@ -123,4 +120,23 @@ public class PlayerComponent extends CustomComponent {
 			targetButton.setCaption(actiualValue.toString());
 		}
 	}	
+	
+	@SuppressWarnings("serial")
+	public static class JokeClickListener implements ClickListener {
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			if (jokeCounter != 0 && (jokeCounter % 11 == 0 || jokeCounter % 17 == 0)) {				
+				Window window = new Window("Plankton says: \"This is my grava!\"");
+				window.setModal(true);
+				window.setResizable(false);
+				Image img = new Image();
+				img.setSource(new ClassResource("/static/img/plankton.png"));
+				window.setContent(img);				
+				UI.getCurrent().addWindow(window);
+			} 
+			++ jokeCounter;						
+		}
+		
+	}
 }

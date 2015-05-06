@@ -1,7 +1,6 @@
 package com.vbashur.grava.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
@@ -17,36 +16,35 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vbashur.grava.Const;
+import com.vbashur.grava.game.BroadcastEvent;
 import com.vbashur.grava.game.PlayerInfo;
 import com.vbashur.grava.game.PlayerInfoHolder;
 import com.vbashur.grava.game.ResponseHandler;
 
+@SuppressWarnings("serial")
 @SpringUI
 @PreserveOnRefresh
 @Push
 public class MainLayout extends UI implements Broadcaster.BroadcastListener {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	
 	@Autowired
-	private ResponseHandler respHandler;
+	protected ResponseHandler respHandler;
 
 	@Autowired
-	private PlayerInfoHolder playerInfoHolder;
-
-	protected WebApplicationContext applicationContext;
+	protected PlayerInfoHolder playerInfoHolder;
+		
+	protected Label statusLabel;
 	
-	VerticalLayout vl;
+	protected RestartClickListener restartlistener;
+	
+	protected static final String WELCOME_MESSAGE = "%s, please start the game";
 
-	@SuppressWarnings("serial")
 	@Override
 	protected void init(VaadinRequest request) {
 
-		vl = new VerticalLayout();
+		VerticalLayout vl = new VerticalLayout();
 		vl.setMargin(true);
 		vl.setWidth(100, Unit.PERCENTAGE);
 		vl.setHeight(100, Unit.PERCENTAGE);
@@ -54,34 +52,30 @@ public class MainLayout extends UI implements Broadcaster.BroadcastListener {
 		Label caption = new Label("<b>Grava Hal - Bikini Bottom Edition</b>", ContentMode.HTML);
 		vl.addComponent(caption);
 
-		PlayerInfo playerA = playerInfoHolder.getPlayerA();//new PlayerInfo(Player.SPOUNGE_BOB, playerInfoHolder.getGravaArbiter(), playerInfoHolder.getGameBoardA());
-		PlayerInfo playerB = playerInfoHolder.getPlayerB(); //new PlayerInfo(Player.PATRICK_STAR, playerInfoHolder.getGravaArbiter(), playerInfoHolder.getGameBoardB());
+		PlayerInfo playerA = playerInfoHolder.getPlayerA();
+		PlayerInfo playerB = playerInfoHolder.getPlayerB();
 
 		PlayerComponent pc1 = new PlayerComponent(playerA.getPlayer(), playerInfoHolder.getGravaArbiter());
 		PlayerComponent pc2 = new PlayerComponent(playerB.getPlayer(), playerInfoHolder.getGravaArbiter());
 		
-		playerInfoHolder.registerPlayerComponent(playerA.getPlayer(), pc1, UI.getCurrent().getPage());
-		playerInfoHolder.registerPlayerComponent(playerB.getPlayer(), pc2, UI.getCurrent().getPage());
+		playerInfoHolder.registerPlayerComponent(playerA.getPlayer(), pc1);
+		playerInfoHolder.registerPlayerComponent(playerB.getPlayer(), pc2);
 		
 		respHandler.registerPlayers(playerA, playerB, playerInfoHolder);
 //		respHandler.registerComponents(pc1, pc2);
 		
-		 Broadcaster.register(this);
+		Broadcaster.register(this);
+		
+		statusLabel = new Label();
 
+		restartlistener = new RestartClickListener(playerA, playerB, pc1, pc2);
 		Button resetBtn = new Button("reset");
-		resetBtn.setWidth(Const.DEFAULT_WIDTH, Unit.PIXELS);
-		resetBtn.addClickListener(new ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				playerA.reset();
-				playerB.reset();
-				refreshGame(playerA, playerB, pc1, pc2);
-			}
-		});
+		resetBtn.setWidth(Const.DEFAULT_WIDTH, Unit.PIXELS);		
+		resetBtn.addClickListener(restartlistener);
 
 		vl.addComponent(pc1);
 		vl.addComponent(pc2);
+		vl.addComponent(statusLabel);
 		vl.addComponent(resetBtn);
 		vl.setExpandRatio(resetBtn, 1.0f);
 
@@ -99,20 +93,43 @@ public class MainLayout extends UI implements Broadcaster.BroadcastListener {
 		
 		pc1.setEnabled(true);
 		pc2.setEnabled(false);
-		Notification.show(playerA.getPlayer().getName() + ", please start the game", Type.HUMANIZED_MESSAGE);
+		String welcomeMessage = String.format(WELCOME_MESSAGE, playerA.getPlayer().getName());
+		Notification.show(welcomeMessage, Type.HUMANIZED_MESSAGE);
+		statusLabel.setCaption(welcomeMessage);
 	}
 
 	@Override
-	public void receiveBroadcast(String message) {
+	public void receiveBroadcast(BroadcastEvent event) {
 		// Must lock the session to execute logic safely
         access(new Runnable() {
             @Override
             public void run() {
-                // Show it somehow
-                vl.addComponent(new Label(message));
+            	if (event instanceof BroadcastEvent.OnFinishTurn) {
+            		statusLabel.setCaption(event.getPlayer().getOppositeName() + " it's your turn");
+            	} else if (event instanceof BroadcastEvent.OnOneMoreTurn) {
+            		Notification.show(event.getPlayer().getName() + " has one more turn", Type.TRAY_NOTIFICATION);
+            	} else if (event instanceof BroadcastEvent.OnCapturing) {
+            		int stonesToGrab = ((BroadcastEvent.OnCapturing)event).getCaptured();
+            		Notification.show(event.getPlayer().getName() + " captures " + stonesToGrab, Type.TRAY_NOTIFICATION);
+                } else if (event instanceof BroadcastEvent.OnFinishing) {     	
+                	
+                	
+                	Window window = new Window(event.getPlayer().getName() + " won the game");
+    				window.setModal(true);
+    				window.setClosable(true);
+    				window.setResizable(false);  
+    				Button restartBtn = new Button("Restart", restartlistener);
+    				VerticalLayout vl = new VerticalLayout();
+    				vl.addComponent(new Label("Result: " + ((BroadcastEvent.OnFinishing)event).getGrava()));
+    				vl.addComponent(event.getPlayer().getImage());
+    				vl.addComponent(restartBtn);
+    				vl.setExpandRatio(restartBtn, 1.0f);
+    				window.setContent(vl);				
+    				UI.getCurrent().addWindow(window);
+                	                
+                }
             }
         });
-		
 		
 	}
 
@@ -121,4 +138,28 @@ public class MainLayout extends UI implements Broadcaster.BroadcastListener {
         Broadcaster.unregister(this);
         super.detach();
     }
+		
+	protected class RestartClickListener implements ClickListener {
+		
+		private PlayerInfo playerA;
+		private PlayerInfo playerB;
+		private PlayerComponent pc1;
+		private PlayerComponent pc2;
+		
+		public RestartClickListener(PlayerInfo playerA, PlayerInfo playerB, PlayerComponent pc1, PlayerComponent pc2) {
+			super();
+			this.playerA = playerA;
+			this.playerB = playerB;
+			this.pc1 = pc1;
+			this.pc2 = pc2;
+		}		
+		
+		@Override
+		public void buttonClick(ClickEvent event) {
+			playerA.reset();
+			playerB.reset();
+			refreshGame(playerA, playerB, pc1, pc2);			
+		}
+		
+	}
 }
