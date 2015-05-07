@@ -20,7 +20,7 @@ public class GameBoard {
 		initPitMap();
 	}
 	
-	public void initPitMap() {
+	public  Map<Integer, Integer> initPitMap() {
 		if (boardPitMap == null) {
 			boardPitMap = new HashMap<Integer, Integer>();
 		} else {
@@ -30,54 +30,70 @@ public class GameBoard {
 		for (int iter = 1; iter <= Const.DEFAULT_PIT_NUM; ++iter) {
 			boardPitMap.put(iter, Const.DEFAULT_STONE_COUNT);
 		}
+		return boardPitMap;
 	}
 
 	public Integer giveStones(Integer targetIndex) {
-		Integer items = boardPitMap.get(targetIndex);
-		boardPitMap.put(targetIndex, 0);
+		Integer items = getPits().get(targetIndex);
+		getPits().put(targetIndex, 0);
 		return items;
 	}
 
 	public void makeTurn(Integer startIndex) {
-		Integer stones = boardPitMap.get(startIndex);
+		Map<Integer, Integer> pitmap = getPits();
+		Integer stones = pitmap.get(startIndex);
 		if (stones > 0) {
-			boardPitMap.put(startIndex, 0);
+			pitmap.put(startIndex, 0);
 
 			int tmpIndex = startIndex + 1;
 
 			int upperBound = startIndex + stones - 1;
 
 			while (tmpIndex <= upperBound) {
-				int currentIndex = tmpIndex % boardPitMap.size();
-				int currentValue = boardPitMap.get(currentIndex);
-				boardPitMap.put(currentIndex, ++currentValue);
+				int currentIndex = tmpIndex % pitmap.size();
+				int currentValue = pitmap.get(currentIndex);
+				pitmap.put(currentIndex, ++currentValue);
 				++tmpIndex;
 			}
 
-			int lastIndex = tmpIndex % boardPitMap.size();
+			int lastIndex = tmpIndex % pitmap.size();
 			if (lastIndex == 0) {
+				addGravaStones(1);
 				if (isGameCompeted()) {
 					arbiter.showWinner(player);					
-				} else {
+				} else {					
 					arbiter.makeOneMoreTurn(player);
 				}
 			} else {
-				Integer stonesRemain = boardPitMap.get(lastIndex);
+				Integer stonesRemain = pitmap.get(lastIndex);
 				if (stonesRemain == 0) {
 					addGravaStones(1);
 					arbiter.grabOppositeStones(this.player, lastIndex);
-				}
-				if (isGameCompeted()) {
-					arbiter.showWinner(player);					
+					if (isGameCompeted()) {
+						arbiter.showWinner(player);					
+					} else {
+						arbiter.finishTurn(player);
+					}
 				} else {
+					int currentValue = pitmap.get(lastIndex);
+					pitmap.put(lastIndex, ++currentValue);
 					arbiter.finishTurn(player);
 				}
+				
 			}			
 		}
 	}
 
 	public Integer getGravaStones() {
-		return boardPitMap.get(Const.GRAVA_INDEX);
+		return getPits().get(Const.GRAVA_INDEX);
+	}
+	
+	public Integer collectAllStones() {
+		Integer allStones = 0;
+		for(Integer stones : getPits().values()) {
+			allStones += stones;
+		}
+		return allStones;
 	}
 	
 	public Map<Integer, Integer> getPits() {
@@ -87,14 +103,14 @@ public class GameBoard {
 	public void addGravaStones(Integer count) {
 		Integer currStonesCount = getGravaStones();
 		currStonesCount += count;
-		boardPitMap.put(Const.GRAVA_INDEX, currStonesCount);
+		getPits().put(Const.GRAVA_INDEX, currStonesCount);
 	}
 
-	private boolean isGameCompeted() {
+	public boolean isGameCompeted() {
 		boolean isCompleted = true;
 		Integer iter = 1;
 		while (isCompleted && iter <= Const.DEFAULT_PIT_NUM) {
-			Integer stoneNum = boardPitMap.get(iter);
+			Integer stoneNum = getPits().get(iter);
 			if (stoneNum != 0) {
 				isCompleted = false;
 			} else {

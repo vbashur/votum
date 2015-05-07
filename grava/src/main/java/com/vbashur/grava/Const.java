@@ -9,5 +9,7 @@ public interface Const {
 	final static int GRAVA_INDEX = 0;
 	
 	final static int DEFAULT_WIDTH = 62;
+	
+	final static String APP_NAME = "Grava Hal";
 
 }
