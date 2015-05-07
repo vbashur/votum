@@ -1,5 +1,6 @@
 package com.vbashur.grava.game;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +15,15 @@ public class ResponseHandler implements ApplicationListener<GravaEvent> {
 
 	private PlayerInfo playerB;
 	
+	@Autowired
 	private PlayerInfoHolder playerInfoHolder;
 		
-	public void registerPlayers(PlayerInfo player1, PlayerInfo player2, PlayerInfoHolder holder) {
+	public void registerPlayers(PlayerInfo player1, PlayerInfo player2) {
 		if (player1 == null || player2 == null || player1 == player2) {
 			throw new UnsupportedOperationException("Unable to register players");
 		}
 		this.playerA = player1;
-		this.playerB = player2;		
-		this.playerInfoHolder = holder;
+		this.playerB = player2;	
 	}	
 	
 	@Override

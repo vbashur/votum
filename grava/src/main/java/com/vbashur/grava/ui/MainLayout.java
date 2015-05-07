@@ -61,8 +61,7 @@ public class MainLayout extends UI implements Broadcaster.BroadcastListener {
 		playerInfoHolder.registerPlayerComponent(playerA.getPlayer(), pc1);
 		playerInfoHolder.registerPlayerComponent(playerB.getPlayer(), pc2);
 		
-		respHandler.registerPlayers(playerA, playerB, playerInfoHolder);
-//		respHandler.registerComponents(pc1, pc2);
+		respHandler.registerPlayers(playerA, playerB);
 		
 		Broadcaster.register(this);
 		
@@ -111,8 +110,7 @@ public class MainLayout extends UI implements Broadcaster.BroadcastListener {
             	} else if (event instanceof BroadcastEvent.OnCapturing) {
             		int stonesToGrab = ((BroadcastEvent.OnCapturing)event).getCaptured();
             		Notification.show(event.getPlayer().getName() + " captures " + stonesToGrab, Type.TRAY_NOTIFICATION);
-                } else if (event instanceof BroadcastEvent.OnFinishing) {     	
-                	
+                } else if (event instanceof BroadcastEvent.OnFinishing) {                	
                 	
                 	Window window = new Window(event.getPlayer().getName() + " won the game");
     				window.setModal(true);
