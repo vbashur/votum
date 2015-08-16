@@ -98,7 +98,7 @@ public class MainLayout extends UI implements Broadcaster.BroadcastListener {
 	}
 
 	@Override
-	public void receiveBroadcast(BroadcastEvent event) {
+	public void receiveBroadcast(final BroadcastEvent event) {
 		// Must lock the session to execute logic safely
         access(new Runnable() {
             @Override
