@@ -35,6 +35,8 @@ dataaccess\.settings
 datapine-test-app\target
 dataaccess\container-1-start\target\
 dataaccess\hibernate-2-start\target\
+dataaccess\bin
+grava\target
 
 
 
