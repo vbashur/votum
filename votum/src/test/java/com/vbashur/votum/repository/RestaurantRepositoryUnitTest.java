@@ -1,21 +1,19 @@
 package com.vbashur.votum.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.vbashur.votum.config.RepositoryConfiguration;
@@ -24,31 +22,15 @@ import com.vbashur.votum.domain.Restaurant;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {RepositoryConfiguration.class})
-public class RestaurantRepositoryUnitTest {
+public class RestaurantRepositoryUnitTest extends BaseRepositoryUnitTest {
 
 	@Autowired
-	private RestaurantRepository restaurantRepository;
-	
-	@Before
-	public void setup() {
-		SecurityContextHolder.getContext().setAuthentication(
-				new UsernamePasswordAuthenticationToken("admin", "admin", AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER")));
-	}
-	
-	@After
-	public void tearDown() {
-		SecurityContextHolder.clearContext();
-	}
+	private RestaurantRepository restaurantRepository;	
 	
 	@Test
 	public void testSaveRestaurant() {
 		
-		Restaurant traditionalRestaurant = new Restaurant();		
-		String traditionalRestaurantName = "Old good times";
-		traditionalRestaurant.setName(traditionalRestaurantName);
-		traditionalRestaurant.setAddress("Aschheim, Einsteinring 29");
-		traditionalRestaurant.setDescription("Traditional german food for average price");
-		traditionalRestaurant.setEmail("traditional@mail.de");
+		Restaurant traditionalRestaurant = createTraditionalRestaurant();
 
 		assertTrue( restaurantRepository.count() == 0);				
 		assertNull(traditionalRestaurant.getRestaurantId());
@@ -56,22 +38,9 @@ public class RestaurantRepositoryUnitTest {
 		assertNotNull(traditionalRestaurant.getRestaurantId());		
 		assertTrue(restaurantRepository.findAll().iterator().hasNext());
 		
-		Restaurant exoticRestaurant = new Restaurant();
-		String exoticRestaurantName = "Exxxotica!";
-		exoticRestaurant.setName(exoticRestaurantName);
-		exoticRestaurant.setAddress("Munich, Sohnenstrasse 15");
-		exoticRestaurant.setDescription("Fried insects, banana beer, sweet octopus and many more");
-		exoticRestaurant.setEmail("exxxotica@mail.de");
-		
-		Meal exoticFood1 = new Meal();
-		exoticFood1.setName("bugs");
-		exoticFood1.setDescription("deep fried");
-		exoticFood1.setPrice(1.15F);
-		
-		Meal exoticFood2 = new Meal();
-		exoticFood1.setName("kimchi");
-		exoticFood1.setDescription("korean spicy cabbage");
-		exoticFood1.setPrice(2.50F);
+		Restaurant exoticRestaurant = createExoticRestaurant();		
+		Meal exoticFood1 = createBugMeal();		
+		Meal exoticFood2 = createKimchiMeal();
 		Set<Meal> exoticMenu = new HashSet<Meal>();
 		exoticMenu.add(exoticFood1);
 		exoticMenu.add(exoticFood2);
@@ -83,16 +52,91 @@ public class RestaurantRepositoryUnitTest {
 				
 		Restaurant fetchedRestaurant1 = restaurantRepository.findOne(traditionalRestaurant.getRestaurantId());
 		assertNotNull(fetchedRestaurant1);
-		assertTrue(fetchedRestaurant1.getName().equals(traditionalRestaurantName));
+		assertTrue(fetchedRestaurant1.getName().equals(traditionalRestaurant.getName()));
 		
 		
 		Restaurant fetchedRestaurant2 = restaurantRepository.findOne(exoticRestaurant.getRestaurantId());
 		assertNotNull(fetchedRestaurant2);
-		assertTrue(fetchedRestaurant2.getName().equals(exoticRestaurantName));
-		assertNotNull(fetchedRestaurant2.getMeals());
-		System.out.println(fetchedRestaurant2.getMeals().size());
-		System.out.println(fetchedRestaurant1.getMeals().size());
-		assertTrue(fetchedRestaurant2.getMeals().size() == 2);
-		
+		assertTrue(fetchedRestaurant2.getName().equals(exoticRestaurant.getName()));
+		assertTrue(fetchedRestaurant1.getMeals().size() == 0);
+		assertNotNull(fetchedRestaurant2.getMeals());		
+		assertTrue(fetchedRestaurant2.getMeals().size() == 2);							
 	}
+	
+	@Test
+	public void testFindByRestaurantId() {
+		Restaurant traditionalRestaurant = createTraditionalRestaurant();
+		Meal kimchi = createKimchiMeal();
+		Set<Meal> menu1 = new HashSet<Meal>();
+		menu1.add(kimchi);		
+		traditionalRestaurant.setMeals(Collections.unmodifiableSet(menu1));
+		
+		Restaurant exoticRestaurant = createExoticRestaurant();
+		Meal bugs = createBugMeal();
+		Set<Meal> menu2 = new HashSet<Meal>();
+		menu2.add(bugs);
+		exoticRestaurant.setMeals(Collections.unmodifiableSet(menu2));
+		
+		assertNull(traditionalRestaurant.getRestaurantId());
+		assertNull(exoticRestaurant.getRestaurantId());
+		restaurantRepository.save(traditionalRestaurant);
+		restaurantRepository.save(exoticRestaurant);
+		assertNotNull(traditionalRestaurant.getRestaurantId());
+		assertNotNull(exoticRestaurant.getRestaurantId());
+		Long traditionalRestaurantId = traditionalRestaurant.getRestaurantId();
+		Long exoticRestaurantId = exoticRestaurant.getRestaurantId();
+		
+		Restaurant fetchedExoticRestaurant = restaurantRepository.findByRestaurantId(exoticRestaurantId);
+		assertNotNull(fetchedExoticRestaurant);
+		assertEquals(exoticRestaurant.getAddress(), fetchedExoticRestaurant.getAddress());
+		assertEquals(exoticRestaurant.getName(), fetchedExoticRestaurant.getName());
+		assertEquals(exoticRestaurant.getDescription(), fetchedExoticRestaurant.getDescription());
+		assertEquals(exoticRestaurant.getEmail(), fetchedExoticRestaurant.getEmail());
+		assertEquals(exoticRestaurant.getMeals().size(), fetchedExoticRestaurant.getMeals().size());		
+		assertEquals(exoticRestaurant.getMeals().iterator().next(), fetchedExoticRestaurant.getMeals().iterator().next());		
+		
+		Restaurant fetchedTraditionalRestaurant = restaurantRepository.findByRestaurantId(traditionalRestaurantId);
+		assertNotNull(fetchedTraditionalRestaurant);		
+		assertEquals(traditionalRestaurant.getAddress(), fetchedTraditionalRestaurant.getAddress());
+		assertEquals(traditionalRestaurant.getName(), fetchedTraditionalRestaurant.getName());
+		assertEquals(traditionalRestaurant.getDescription(), fetchedTraditionalRestaurant.getDescription());
+		assertEquals(traditionalRestaurant.getEmail(), fetchedTraditionalRestaurant.getEmail());
+		assertEquals(traditionalRestaurant.getMeals().size(), fetchedTraditionalRestaurant.getMeals().size());		
+		assertEquals(traditionalRestaurant.getMeals().iterator().next(), fetchedTraditionalRestaurant.getMeals().iterator().next());
+				
+	}
+	
+	@Test
+	public void testFindByRestaurantName() {
+		Restaurant traditionalRestaurant = createTraditionalRestaurant();
+		Meal kimchi = createKimchiMeal();
+		Set<Meal> menu1 = new HashSet<Meal>();
+		menu1.add(kimchi);		
+		traditionalRestaurant.setMeals(Collections.unmodifiableSet(menu1));
+		restaurantRepository.save(traditionalRestaurant);
+		
+		Restaurant exoticRestaurant = createExoticRestaurant();
+		Meal bugs = createBugMeal();
+		Set<Meal> menu2 = new HashSet<Meal>();
+		menu2.add(bugs);
+		exoticRestaurant.setMeals(Collections.unmodifiableSet(menu2));		
+		restaurantRepository.save(exoticRestaurant);				
+		
+		Restaurant fetchedExoticRestaurant = restaurantRepository.findByName(exoticRestaurant.getName());
+		assertNotNull(fetchedExoticRestaurant);
+		assertEquals(exoticRestaurant.getAddress(), fetchedExoticRestaurant.getAddress());
+		assertEquals(exoticRestaurant.getName(), fetchedExoticRestaurant.getName());
+		assertEquals(exoticRestaurant.getDescription(), fetchedExoticRestaurant.getDescription());
+		assertEquals(exoticRestaurant.getEmail(), fetchedExoticRestaurant.getEmail());
+		assertEquals(exoticRestaurant.getMeals().size(), fetchedExoticRestaurant.getMeals().size());		
+		assertEquals(exoticRestaurant.getMeals().iterator().next(), fetchedExoticRestaurant.getMeals().iterator().next());		
+		
+				
+	}
+
+	@Override
+	public void cleanupRepositories() {
+		restaurantRepository.deleteAll();		
+	}
+	
 }

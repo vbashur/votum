@@ -104,4 +104,9 @@ public class Meal {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Meal [mealId=" + mealId + ", name=" + name + ", price=" + price + ", description=" + description + "]";
+	}
+
 }
