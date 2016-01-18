@@ -15,7 +15,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.authorizeRequests().antMatchers("/").permitAll()
 			.and()
-			.authorizeRequests().antMatchers("/console/**").permitAll()			
+			.authorizeRequests().antMatchers("/console/**").denyAll()			
 			.and()
 			.authorizeRequests().antMatchers("/api/list").hasAnyRole("USER", "ADMIN")
 			.and()
@@ -23,7 +23,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 			.and()
 			.authorizeRequests().antMatchers("/api/collect").hasRole("ADMIN")
 			.and()
-			.authorizeRequests().antMatchers("/api/update").hasRole("ADMIN")
+			.authorizeRequests().antMatchers("/api/top").hasRole("ADMIN")
+			.and()
+			.authorizeRequests().antMatchers("/api/restaurant/**").hasRole("ADMIN")
 			.and().httpBasic().and().csrf().disable();
 	}
 	

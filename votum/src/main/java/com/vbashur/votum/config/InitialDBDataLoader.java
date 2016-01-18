@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component;
 
 import com.vbashur.votum.domain.Meal;
 import com.vbashur.votum.domain.Restaurant;
+import com.vbashur.votum.domain.Voting;
 import com.vbashur.votum.repository.MealRepository;
 import com.vbashur.votum.repository.RestaurantRepository;
+import com.vbashur.votum.repository.VotingRepository;
 
 @Component
 public class InitialDBDataLoader implements ApplicationListener<ContextRefreshedEvent> {
@@ -23,10 +25,14 @@ public class InitialDBDataLoader implements ApplicationListener<ContextRefreshed
 	private Logger log = Logger.getLogger(InitialDBDataLoader.class);
 	
 	@Autowired
-	RestaurantRepository restaurantRepository;
+	private RestaurantRepository restaurantRepository;
 	
 	@Autowired
-	MealRepository mealRepository;
+	private MealRepository mealRepository;
+
+	@Autowired
+	private VotingRepository votingRepository;
+
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
@@ -96,6 +102,12 @@ public class InitialDBDataLoader implements ApplicationListener<ContextRefreshed
 		
 		restaurantRepository.save(luxeryRestaurant);
 		log.info(String.format("Saved Restaurant - id: %s - name: %s", luxeryRestaurant.getRestaurantId(), luxeryRestaurant.getName()));
+		
+//		Voting adminVoting = new Voting();
+//		adminVoting.setRestaurant(traditionalRestaurant);
+//		adminVoting.setUser("admin");
+//		votingRepository.save(adminVoting);
+//		log.info(String.format("Saved Voting - user: %s - restaurant: %s", adminVoting.getUser(), adminVoting.getRestaurant().getRestaurantId()));
 		
 		SecurityContextHolder.clearContext();
 
