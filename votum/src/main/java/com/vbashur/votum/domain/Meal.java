@@ -3,18 +3,22 @@ package com.vbashur.votum.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "Meal")
 public class Meal {
 	
-	@Column(name = "id")		
+	public Meal() {}
+	
+	@Column(name = "meal_id")		
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue//(strategy = GenerationType.IDENTITY)
+	private Long mealId;
 
 	@Column(name = "name")
 	private String name;
@@ -25,12 +29,12 @@ public class Meal {
 	@Column(name = "description")
 	private String description;
 
-	public Long getId() {
-		return id;
+	public Long getMealId() {
+		return mealId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setMealId(Long id) {
+		this.mealId = id;
 	}
 
 	public String getName() {
@@ -55,14 +59,14 @@ public class Meal {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
+	}	
 	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((mealId == null) ? 0 : mealId.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((price == null) ? 0 : price.hashCode());
 		return result;
@@ -82,10 +86,10 @@ public class Meal {
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
-		if (id == null) {
-			if (other.id != null)
+		if (mealId == null) {
+			if (other.mealId != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!mealId.equals(other.mealId))
 			return false;
 		if (name == null) {
 			if (other.name != null)
