@@ -1,12 +1,11 @@
 package com.vbashur.votum.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -24,8 +23,8 @@ public class Voting {
 	@Column(name = "user")
 	private String user;
 		
-	@OneToOne
-    @PrimaryKeyJoinColumn
+	@JoinColumn
+	@ManyToOne
 	private Restaurant restaurant;
 
 	public Long getVotingId() {

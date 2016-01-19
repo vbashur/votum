@@ -33,6 +33,7 @@ import com.vbashur.votum.web.data.VoteResult;
 public class RestaurantController {
 	
 	private static String WRONG_RESTAURANT_MSG = "The restaurant with specified Id doesn't exist";
+	private static String SUCCESSFULLY_VOTED_RESTAURANT_MSG = "User %s has successfully voted for the restaurant with id=%s";
 	private static String SUCCESSFULLY_CHANGED_RESTAURANT_MSG = "User %s has successfully changed the restaurant, new restaurant id=%s";
 	private static String LATELY_CHANGED_RESTAURANT_MSG = "User %s is too late to change the restaurant ";
 	private static String NOTHING_TO_UPDATE_MSG = "Nothing to update";
@@ -58,8 +59,11 @@ public class RestaurantController {
 		for (Restaurant r : restaurants) {
 			respBody.add(r);
 		}
-		ResponseEntity<List<Restaurant>> usersResp = new ResponseEntity<List<Restaurant>>(respBody, HttpStatus.OK);		
-		return usersResp;
+		OperationResult<List<Restaurant>> response = new OperationResult<List<Restaurant>>();
+		response.setStatus(Status.SUCCESS);
+		response.setBody(respBody);
+		return new ResponseEntity<OperationResult<List<Restaurant>>>(response, HttpStatus.OK);	
+		
 	}
 	
 	@RequestMapping(value = "/vote", method = RequestMethod.POST)
@@ -67,10 +71,12 @@ public class RestaurantController {
 	public ResponseEntity<?> voteForRestaurant(@RequestBody Vote vote) {					
 		
 		Long restaurantId = vote.getRestaurantId();				
-		Restaurant restaurant = restaurantRepository.findOne(restaurantId);				
+		Restaurant restaurant = restaurantRepository.findOne(restaurantId);	
+		OperationResult<String> response = new OperationResult<>();
 		if (restaurant == null) {
-			ResponseEntity<String> response = new ResponseEntity<String>(WRONG_RESTAURANT_MSG, HttpStatus.BAD_REQUEST);					
-			return response;
+			response.setStatus(Status.FAILED);
+			response.setBody(WRONG_RESTAURANT_MSG);											
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);
 		}
 		
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -81,42 +87,48 @@ public class RestaurantController {
 			Voting existedUserVoting = votingRepository.findByUser(username);
 			if (existedUserVoting == null) {														
 				Voting firstUserVoting = new Voting();
-				firstUserVoting.setUser(username);
+				firstUserVoting.setUser(username);				
 				firstUserVoting.setRestaurant(restaurant);
 				votingRepository.save(firstUserVoting);
+				response.setStatus(Status.SUCCESS);
+				response.setBody(String.format(SUCCESSFULLY_VOTED_RESTAURANT_MSG, username, restaurant.getName()));					
+				return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);
+				
 			} else if (existedUserVoting.getRestaurant().getRestaurantId() != restaurantId) {								
 				
 				LocalTime currentTime = LocalTime.now();
 				if (currentTime.isBefore(DEADLINE)) {
 					existedUserVoting.setRestaurant(restaurant);
 					votingRepository.save(existedUserVoting);
-					return new ResponseEntity<String>(
-							String.format(SUCCESSFULLY_CHANGED_RESTAURANT_MSG, username, restaurant.getName()), 
-							HttpStatus.OK);
+					response.setStatus(Status.SUCCESS);
+					response.setBody(String.format(SUCCESSFULLY_CHANGED_RESTAURANT_MSG, username, restaurant.getName()));					
+					return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);					
 				} else {
-					return new ResponseEntity<String>(
-							String.format(LATELY_CHANGED_RESTAURANT_MSG, username), 
-							HttpStatus.OK);
+					response.setStatus(Status.FAILED);
+					response.setBody(String.format(LATELY_CHANGED_RESTAURANT_MSG, username));					
+					return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);					
 				}				
 			}
-		}
-		return new ResponseEntity<String>(NOTHING_TO_UPDATE_MSG, HttpStatus.OK);
+		}		
+		response.setStatus(Status.IGNORED);
+		response.setBody(NOTHING_TO_UPDATE_MSG);		
+		return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/restaurant/add", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<?> addRestaurant(@RequestBody Restaurant restaurant) {
 		Restaurant fetchedRestaurant = restaurantRepository.findByName(restaurant.getName());
-		OperationResult operationResult = new OperationResult();
+		OperationResult<String> response = new OperationResult<String>();
 		if (fetchedRestaurant != null) {			
-			operationResult.setStatus(Status.ERRROR);
-			operationResult.setMessage(DUPLICATE_NAME_MSG);
-			return new ResponseEntity<OperationResult>(operationResult, HttpStatus.BAD_REQUEST);			
+			response.setStatus(Status.FAILED);
+			response.setBody(DUPLICATE_NAME_MSG);
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.BAD_REQUEST);			
 		} else {
 			restaurantRepository.save(restaurant);
-			operationResult.setStatus(Status.SUCCESS);
-			operationResult.setMessage(ADDED_RESTAURTANT_MSG);
-			return new ResponseEntity<OperationResult>(operationResult, HttpStatus.OK);			
+			response.setStatus(Status.SUCCESS);
+			response.setBody(ADDED_RESTAURTANT_MSG);
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);			
 		}
 		
 	}
@@ -125,16 +137,16 @@ public class RestaurantController {
 	@ResponseBody
 	public ResponseEntity<?> deleteRestaurant(@RequestBody Vote voteRestaurantToDelete) {
 		Long id = voteRestaurantToDelete.getRestaurantId();
-		OperationResult operationResult = new OperationResult();
+		OperationResult<String> response = new OperationResult<String>();
 		if (restaurantRepository.exists(id)) {		
 			restaurantRepository.delete(id);
-			operationResult.setStatus(Status.SUCCESS);
-			operationResult.setMessage(REMOVED_RESTAURTANT_MSG);
-			return new ResponseEntity<OperationResult>(operationResult, HttpStatus.OK);						
+			response.setStatus(Status.SUCCESS);
+			response.setBody(REMOVED_RESTAURTANT_MSG);
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);						
 		} else {
-			operationResult.setStatus(Status.ERRROR);
-			operationResult.setMessage(WRONG_RESTAURANT_MSG);
-			return new ResponseEntity<OperationResult>(operationResult, HttpStatus.BAD_REQUEST);						
+			response.setStatus(Status.FAILED);
+			response.setBody(WRONG_RESTAURANT_MSG);
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.BAD_REQUEST);						
 		}		
 	}
 	
@@ -142,16 +154,16 @@ public class RestaurantController {
 	@ResponseBody
 	public ResponseEntity<?> updateRestaurant(@RequestBody Restaurant restaurant) {		
 		Long id = restaurant.getRestaurantId();		
-		OperationResult operationResult = new OperationResult();
+		OperationResult<String> response = new OperationResult<String>();
 		if (restaurantRepository.exists(id)) {			
 			restaurantRepository.save(restaurant);			
-			operationResult.setStatus(Status.SUCCESS);
-			operationResult.setMessage(UPDATED_RESTAURTANT_MSG);
-			return new ResponseEntity<OperationResult>(operationResult, HttpStatus.OK);			
-		} else {			
-			operationResult.setStatus(Status.ERRROR);
-			operationResult.setMessage(WRONG_RESTAURANT_MSG);
-			return new ResponseEntity<OperationResult>(operationResult, HttpStatus.BAD_REQUEST);											
+			response.setStatus(Status.SUCCESS);
+			response.setBody(UPDATED_RESTAURTANT_MSG);
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);			
+		} else {					
+			response.setStatus(Status.FAILED);	
+			response.setBody(WRONG_RESTAURANT_MSG);					
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);											
 		}		
 	}
 	
@@ -186,8 +198,11 @@ public class RestaurantController {
 	public ResponseEntity<?> collectVotes() { 
 		Iterable<Voting> votesIterable = votingRepository.findAll();
 		Set<Voting> votes = new HashSet<Voting>();
-		votesIterable.forEach( voting -> votes.add(voting));				
-		return new ResponseEntity<Set<Voting>>(votes, HttpStatus.OK);					
+		votesIterable.forEach( voting -> votes.add(voting));		
+		OperationResult<Set<Voting>> response = new OperationResult<>();
+		response.setBody(votes);
+		response.setStatus(Status.SUCCESS);
+		return new ResponseEntity<OperationResult<Set<Voting>>>(response, HttpStatus.OK);					
 	}
 	
 	@RequestMapping(value = "/top", method = RequestMethod.GET)
@@ -218,23 +233,20 @@ public class RestaurantController {
 					topVotedRestaurants.add(r);
 				}
 			});
+			
 			VoteResult voteResult = new VoteResult();
 			voteResult.setVotesNum(maxVotes);
 			voteResult.setRestaurants(topVotedRestaurants);
-			return new ResponseEntity<VoteResult>(voteResult, HttpStatus.OK);			
+			OperationResult<VoteResult> response = new OperationResult<>();
+			response.setBody(voteResult);
+			response.setStatus(Status.SUCCESS);			
+			return new ResponseEntity<OperationResult<VoteResult>>(response, HttpStatus.OK);			
 		} else {
-			return new ResponseEntity<String>(NO_VOTES_MSG, HttpStatus.OK);			
+			OperationResult<String> res = new OperationResult<>();
+			res.setBody(NO_VOTES_MSG);
+			res.setStatus(Status.IGNORED);
+			return new ResponseEntity<OperationResult<String>>(res, HttpStatus.OK);			
 		}												
 	}
-	
-//	private static class VotesComparator implements Comparator<Voting> {
-//
-//		@Override
-//		public int compare(Voting arg0, Voting arg1) {			
-//			return arg0.;
-//		}
-//		
-//	}
-
 	
 }

@@ -2,7 +2,7 @@ package com.vbashur.votum.web.data;
 
 import java.io.Serializable;
 
-public class OperationResult implements Serializable {
+public class OperationResult<T> implements Serializable {
 	
 	/**
 	 * 
@@ -11,7 +11,7 @@ public class OperationResult implements Serializable {
 
 	private String status;
 	
-	private String message;
+	private T body;
 
 	public String getStatus() {
 		return status;
@@ -21,12 +21,12 @@ public class OperationResult implements Serializable {
 		this.status = status.getStatusValue();
 	}
 
-	public String getMessage() {
-		return message;
+	public T getBody() {
+		return body;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setBody(T responseBody) {
+		this.body = responseBody;
 	}	
 		
 
