@@ -32,18 +32,18 @@ import com.vbashur.votum.web.data.VoteResult;
 @RestController
 public class RestaurantController {
 	
-	private static String WRONG_RESTAURANT_MSG = "The restaurant with specified Id doesn't exist";
-	private static String SUCCESSFULLY_VOTED_RESTAURANT_MSG = "User %s has successfully voted for the restaurant with id=%s";
-	private static String SUCCESSFULLY_CHANGED_RESTAURANT_MSG = "User %s has successfully changed the restaurant, new restaurant id=%s";
-	private static String LATELY_CHANGED_RESTAURANT_MSG = "User %s is too late to change the restaurant ";
-	private static String NOTHING_TO_UPDATE_MSG = "Nothing to update";
-	private static String NO_VOTES_MSG = "Unable to choose restaurant: no votes received";
-	private static String DUPLICATE_NAME_MSG = "Restaurant with specified name already exists";
-	private static String ADDED_RESTAURTANT_MSG = "Restaurant was successfully added";
-	private static String REMOVED_RESTAURTANT_MSG = "Restaurant was successfully removed";
-	private static String UPDATED_RESTAURTANT_MSG = "Restaurant was successfully updated";
+	public static String WRONG_RESTAURANT_MSG = "The restaurant with specified Id doesn't exist";
+	public static String SUCCESSFULLY_VOTED_RESTAURANT_MSG = "User %s has successfully voted for the restaurant with id=%s";
+	public static String SUCCESSFULLY_CHANGED_RESTAURANT_MSG = "User %s has successfully changed the restaurant, new restaurant id=%s";
+	public static String LATELY_CHANGED_RESTAURANT_MSG = "User %s is too late to change the restaurant ";
+	public static String NOTHING_TO_UPDATE_MSG = "Nothing to update";
+	public static String NO_VOTES_MSG = "Unable to choose restaurant: no votes received";
+	public static String DUPLICATE_NAME_MSG = "Restaurant with specified name already exists";
+	public static String ADDED_RESTAURTANT_MSG = "Restaurant was successfully added";
+	public static String REMOVED_RESTAURTANT_MSG = "Restaurant was successfully removed";
+	public static String UPDATED_RESTAURTANT_MSG = "Restaurant was successfully updated";
 	
-	private static LocalTime DEADLINE = LocalTime.of(11, 00);
+	public static LocalTime DEADLINE = LocalTime.of(11, 00);
 	
 	@Autowired
 	private RestaurantRepository restaurantRepository;
@@ -94,7 +94,7 @@ public class RestaurantController {
 				response.setBody(String.format(SUCCESSFULLY_VOTED_RESTAURANT_MSG, username, restaurant.getName()));					
 				return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);
 				
-			} else if (existedUserVoting.getRestaurant().getRestaurantId() != restaurantId) {								
+			} else if (!existedUserVoting.getRestaurant().getRestaurantId().equals(restaurantId)) {								
 				
 				LocalTime currentTime = LocalTime.now();
 				if (currentTime.isBefore(DEADLINE)) {
@@ -167,31 +167,6 @@ public class RestaurantController {
 		}		
 	}
 	
-	
-//
-//	@RequestMapping(value = "/vote", method = RequestMethod.GET/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
-//	@ResponseBody
-//	public ResponseEntity<?> voteForRestaurant(@RequestBody Vote vote) {
-//		
-//		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		
-//		if (principal != null && principal instanceof UserDetails) {
-//			UserDetails userDetails = (UserDetails)principal;
-//			System.out.println("user>>>>>>>>>" + userDetails.getUsername());
-//		
-//			
-//		}
-//		System.out.println("vote>>>>>>>>>" + vote.getRestaurantId());
-//		
-//	        
-//		Iterable<Restaurant> restaurants = restaurantRepository.findAll();
-//		List<Restaurant> respBody = new LinkedList<Restaurant>();
-//		for (Restaurant r : restaurants) {
-//			respBody.add(r);
-//		}
-//		ResponseEntity<List<Restaurant>> usersResp = new ResponseEntity<List<Restaurant>>(respBody, HttpStatus.OK);		
-//		return usersResp;
-//	}
 	
 	@RequestMapping(value = "/collect", method = RequestMethod.GET)
 	@ResponseBody
