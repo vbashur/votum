@@ -60,8 +60,8 @@ public class VotingRepositoryUnitTest extends BaseRepositoryUnitTest {
 		assertFalse(restaurantIter.hasNext());
 		
 		votingIter = votingRepository.findAll().iterator();
-		adminVoting = votingIter.next();
-		assertTrue(adminVoting.getRestaurant() == null);			
+		assertFalse(votingIter.hasNext());
+	
 	}
 	
 	@Test
@@ -75,14 +75,14 @@ public class VotingRepositoryUnitTest extends BaseRepositoryUnitTest {
 		
 		Voting user1Voting = new Voting();
 		user1Voting.setUser("user1");
-		user1Voting.setRestaurant(traditionalRestaurant);		
-		votingRepository.save(user1Voting);
+		user1Voting.setRestaurant(traditionalRestaurant);
+		votingRepository.save(user1Voting);		
 		
 		Voting user2Voting = new Voting();
 		user2Voting.setUser("user2");
-		user2Voting.setRestaurant(exoticRestaurant);		
+		user2Voting.setRestaurant(exoticRestaurant);
 		votingRepository.save(user2Voting);
-		
+			
 		Voting user1FetchedVoting = votingRepository.findByUser("user1");
 		assertEquals(user1Voting.getRestaurant().getRestaurantId(), user1FetchedVoting.getRestaurant().getRestaurantId());
 		
@@ -94,9 +94,9 @@ public class VotingRepositoryUnitTest extends BaseRepositoryUnitTest {
 	}
 
 	@Override
-	public void cleanupRepositories() {
+	public void cleanupRepositories() {		
 		restaurantRepository.deleteAll();
-		votingRepository.deleteAll();		
+		votingRepository.deleteAll();					
 	}
 	
 	

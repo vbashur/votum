@@ -1,7 +1,7 @@
 package com.vbashur.votum.web.data;
 
 public enum Status {
-	ERRROR("Error"), SUCCESS("Success"), NONE("None");
+	FAILED("Failed"), SUCCESS("Success"), IGNORED("None");
 	private Status(String val) {
 		this.statusValue = val;
 	}

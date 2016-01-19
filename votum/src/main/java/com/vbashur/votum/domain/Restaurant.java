@@ -1,5 +1,6 @@
 package com.vbashur.votum.domain;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,7 +23,7 @@ public class Restaurant {
 	
 	@Column(name = "restaurant_id")
 	@Id
-	@GeneratedValue//(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private Long restaurantId; 
 	
 	@Column(name = "name")
@@ -36,6 +37,9 @@ public class Restaurant {
 	
 	@Column(name = "email")
 	private String email;
+	
+	@OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
+	private List<Voting> votings;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Meal> meals;
@@ -88,6 +92,14 @@ public class Restaurant {
 		this.meals = meals;
 	}
 
+	public List<Voting> getVotings() {
+		return votings;
+	}
+
+	public void setVotings(List<Voting> votings) {
+		this.votings = votings;
+	}	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -147,6 +159,6 @@ public class Restaurant {
 	public String toString() {
 		return "Restaurant [restaurantId=" + restaurantId + ", name=" + name + ", address=" + address + ", description="
 				+ description + ", email=" + email + ", meals=" + meals + "]";
-	}
+	}	
 	
 }

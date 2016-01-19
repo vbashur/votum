@@ -10,3 +10,9 @@ curl 10.10.150.184:8080/api/collect -u admin:admin -X GET
 -- Find out the top voted restaurant
 curl 10.10.150.184:8080/api/top -u admin:admin -X GET
 
+-- Vote for the restaurant (pay attention to restaurant id and format of the vote message) 
+curl 10.10.150.184:8080/api/vote -u admin:admin -X POST --data {\"restaurantId\":2} -H "Content-type:application/json"
+curl 10.10.150.184:8080/api/vote -u user2:user2 -X POST --data {\"restaurantId\":3} -H "Content-type:application/json"
+
+
+
