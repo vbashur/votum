@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 import com.vbashur.votum.domain.Meal;
 import com.vbashur.votum.domain.Restaurant;
@@ -13,7 +14,11 @@ public abstract class BaseRepositoryUnitTest {
 
 	@Before
 	public void setup() {
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin",
+		User userDetails = new User("admin", "admin", AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER"));
+		
+		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+				userDetails, 
+				"admin",
 				AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER")));
 	}
 
