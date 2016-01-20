@@ -121,9 +121,9 @@ public class RestaurantController {
 		Restaurant fetchedRestaurant = restaurantRepository.findByName(restaurant.getName());
 		OperationResult<String> response = new OperationResult<String>();
 		if (fetchedRestaurant != null) {			
-			response.setStatus(Status.FAILED);
+			response.setStatus(Status.IGNORED);
 			response.setBody(DUPLICATE_NAME_MSG);
-			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.BAD_REQUEST);			
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);			
 		} else {
 			restaurantRepository.save(restaurant);
 			response.setStatus(Status.SUCCESS);
@@ -146,7 +146,7 @@ public class RestaurantController {
 		} else {
 			response.setStatus(Status.FAILED);
 			response.setBody(WRONG_RESTAURANT_MSG);
-			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.BAD_REQUEST);						
+			return new ResponseEntity<OperationResult<String>>(response, HttpStatus.OK);						
 		}		
 	}
 	
@@ -172,10 +172,12 @@ public class RestaurantController {
 	@ResponseBody
 	public ResponseEntity<?> collectVotes() { 
 		Iterable<Voting> votesIterable = votingRepository.findAll();
-		Set<Voting> votes = new HashSet<Voting>();
-		votesIterable.forEach( voting -> votes.add(voting));		
 		OperationResult<Set<Voting>> response = new OperationResult<>();
-		response.setBody(votes);
+		Set<Voting> votes = new HashSet<Voting>();
+		if (votesIterable.iterator().hasNext()) {			
+			votesIterable.forEach( voting -> votes.add(voting));			
+			response.setBody(votes);
+		}
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<OperationResult<Set<Voting>>>(response, HttpStatus.OK);					
 	}
