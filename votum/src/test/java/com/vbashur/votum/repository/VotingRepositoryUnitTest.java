@@ -19,13 +19,14 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.vbashur.votum.config.BaseVotingUnitTest;
 import com.vbashur.votum.config.RepositoryConfiguration;
 import com.vbashur.votum.domain.Restaurant;
 import com.vbashur.votum.domain.Voting;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { RepositoryConfiguration.class })
-public class VotingRepositoryUnitTest extends BaseRepositoryUnitTest {
+public class VotingRepositoryUnitTest extends BaseVotingUnitTest {
 
 	@Autowired
 	private RestaurantRepository restaurantRepository;

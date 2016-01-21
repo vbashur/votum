@@ -1,4 +1,4 @@
-package com.vbashur.votum.repository;
+package com.vbashur.votum.config;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.User;
 import com.vbashur.votum.domain.Meal;
 import com.vbashur.votum.domain.Restaurant;
 
-public abstract class BaseRepositoryUnitTest {
+public abstract class BaseVotingUnitTest {
 
 	@Before
 	public void setup() {
