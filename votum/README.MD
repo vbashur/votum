@@ -44,7 +44,8 @@ Response sample:
 
 curl 10.10.150.184:8080/api/collect -u admin:admin -X GET
 
--- Find out the top voted restaurant<br/>
+-- Find out the top voted restaurant
+
 curl 10.10.150.156:8080/api/top -u admin:admin -X GET
 
 -- Vote for the restaurant (pay attention to restaurant id and format of the vote message)
@@ -65,12 +66,13 @@ curl 10.10.150.156:8080/api/restaurant/delete -u admin:admin -X POST --data {\"n
 
 curl 10.10.150.156:8080/api/restaurant/update -u admin:admin -X POST --data {\"name\":\"Karamba\",\"address\":\"Beverly_Hills_90210\",\"description\":\"Expensive\",\"email\":\"none\",\"meals\":[{\"name\":\"Sausages\",\"price\":39,\"description\":\"Lecker\"},{\"name\":\"Pommes\",\"price\":180,\"description\":\"Cool\"}]} -H "Content-type:application/json"
 
--- set/change the voted restaurant: returns success status only for votes before 11:00 and firstly registered votes<br/>
+-- set/change the voted restaurant: returns success status only for votes before 11:00 and firstly registered votes
+
 curl 10.10.150.156:8080/api/vote -u user2:user2 -X POST --data {\"restaurantId\":3} -H "Content-type:application/json"
 
 Response sample:
 
-{"status":"Success","body":"User user2 has successfully voted for the restaurant with id=Sir Karabas Barabas"}<br/>
+{"status":"Success","body":"User user2 has successfully voted for the restaurant with id=Sir Karabas Barabas"}
 
 curl 10.10.150.156:8080/api/vote -u user2:user2 -X POST --data {\"restaurantId\":2} -H "Content-type:application/json"
 
