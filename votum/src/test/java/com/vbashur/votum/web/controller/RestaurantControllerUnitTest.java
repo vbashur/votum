@@ -1,5 +1,6 @@
 package com.vbashur.votum.web.controller;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
@@ -9,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +27,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vbashur.votum.config.BaseVotingUnitTest;
 import com.vbashur.votum.config.WebConfiguration;
 import com.vbashur.votum.domain.Restaurant;
 import com.vbashur.votum.domain.Voting;
-import com.vbashur.votum.repository.BaseRepositoryUnitTest;
 import com.vbashur.votum.repository.RestaurantRepository;
 import com.vbashur.votum.repository.VotingRepository;
 import com.vbashur.votum.web.data.Status;
@@ -36,7 +38,7 @@ import com.vbashur.votum.web.data.Vote;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = { WebConfiguration.class })
-public class RestaurantControllerUnitTest extends BaseRepositoryUnitTest {
+public class RestaurantControllerUnitTest extends BaseVotingUnitTest {
 
 	private MockMvc mockMvc;
 
@@ -164,7 +166,7 @@ public class RestaurantControllerUnitTest extends BaseRepositoryUnitTest {
 		LocalTime currentTime = LocalTime.now();
 		if (currentTime.isBefore(RestaurantController.DEADLINE)) {
 			Restaurant votingRestaurant = new Restaurant();
-			votingRestaurant.setRestaurantId(Long.MIN_VALUE);
+			votingRestaurant.setRestaurantId(Long.MAX_VALUE);
 			Voting identicalVoting = new Voting();
 			identicalVoting.setRestaurant(votingRestaurant);
 			when(votingRepository.findByUser("admin")).thenReturn(identicalVoting);
@@ -295,8 +297,8 @@ public class RestaurantControllerUnitTest extends BaseRepositoryUnitTest {
 		voting2.setUser("user2");
 		when(votingRepository.findAll()).thenReturn(Arrays.asList(voting1, voting2));
 		try {
-			MvcResult addRestaurantResponse = mockMvc.perform(get("/collect")).andExpect(status().isOk()).andReturn();
-			String responseContent = addRestaurantResponse.getResponse().getContentAsString();
+			MvcResult collectRestaurantResponse = mockMvc.perform(get("/collect")).andExpect(status().isOk()).andReturn();
+			String responseContent = collectRestaurantResponse.getResponse().getContentAsString();
 			assertTrue(responseContent.contains(Status.SUCCESS.getStatusValue()));			
 		} catch (Exception e) {
 			fail();
@@ -304,6 +306,42 @@ public class RestaurantControllerUnitTest extends BaseRepositoryUnitTest {
 		
 	}
 	
+	@Test
+	public void testTopVotedSuccess() {
+		Long exoticRestaurantId = new Random().nextLong();		
+		Restaurant exoticRestaurant = createExoticRestaurant();
+		exoticRestaurant.setRestaurantId(exoticRestaurantId);
+		
+		Long traditionalRestaurantId = new Random().nextLong();
+		Restaurant traditionalRestaurant = createTraditionalRestaurant();
+		traditionalRestaurant.setRestaurantId(traditionalRestaurantId);
+		
+		Voting voting1 = new Voting();
+		voting1.setRestaurant(traditionalRestaurant);
+		voting1.setUser("user1");
+		
+		Voting voting2 = new Voting();
+		voting2.setRestaurant(traditionalRestaurant);
+		voting2.setUser("user2");
+		
+		Voting voting3 = new Voting();
+		voting3.setRestaurant(exoticRestaurant);
+		voting3.setUser("user3");
+		when(votingRepository.findAll()).thenReturn(Arrays.asList(voting1, voting2, voting3));
+		
+		when(restaurantRepository.findOne(exoticRestaurantId)).thenReturn(exoticRestaurant);
+		when(restaurantRepository.findOne(traditionalRestaurantId)).thenReturn(traditionalRestaurant);
+		
+		try {
+			MvcResult topVotedRestaurantResponse = mockMvc.perform(get("/top")).andExpect(status().isOk()).andReturn();
+			String responseContent = topVotedRestaurantResponse.getResponse().getContentAsString();
+			assertTrue(responseContent.contains(Status.SUCCESS.getStatusValue()));	
+			assertTrue(responseContent.contains(traditionalRestaurantId.toString()));
+			assertFalse(responseContent.contains(exoticRestaurantId.toString()));			
+		} catch (Exception e) {
+			fail();
+		}					
+	}
 
 	@Override
 	public void cleanupRepositories() {

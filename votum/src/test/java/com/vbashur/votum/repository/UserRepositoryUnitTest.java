@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.vbashur.votum.config.BaseVotingUnitTest;
 import com.vbashur.votum.config.DBConfiguration;
 import com.vbashur.votum.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {DBConfiguration.class})
 @Ignore
-public class UserRepositoryUnitTest extends BaseRepositoryUnitTest {
+public class UserRepositoryUnitTest extends BaseVotingUnitTest {
 	
 
 	@Autowired

@@ -8,9 +8,7 @@ import com.vbashur.votum.domain.Restaurant;
 
 @PreAuthorize("hasRole('ROLE_USER')")
 public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
-	
-	public Restaurant findByRestaurantId(@Param("restaurantId") Long restaurantId);
-	
+		
 	public Restaurant findByName(@Param("name") String name);
 
 }

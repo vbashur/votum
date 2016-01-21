@@ -10,11 +10,6 @@ public class VotumApplication
 {
 	public static void main(String[] args) {
 		SpringApplication.run(VotumApplication.class, args);
-	}
-	
-//	@PostConstruct
-//	public void init() {
-//		SecurityUtils.runAs("system", "system", "ROLE_ADMIN");
-//	}
+	}	
 
 }

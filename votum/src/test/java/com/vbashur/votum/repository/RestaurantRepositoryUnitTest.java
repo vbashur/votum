@@ -15,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.vbashur.votum.config.BaseVotingUnitTest;
 import com.vbashur.votum.config.RepositoryConfiguration;
 import com.vbashur.votum.domain.Meal;
 import com.vbashur.votum.domain.Restaurant;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {RepositoryConfiguration.class})
-public class RestaurantRepositoryUnitTest extends BaseRepositoryUnitTest {
+public class RestaurantRepositoryUnitTest extends BaseVotingUnitTest {
 
 	@Autowired
 	private RestaurantRepository restaurantRepository;	
@@ -61,50 +62,7 @@ public class RestaurantRepositoryUnitTest extends BaseRepositoryUnitTest {
 		assertNotNull(fetchedRestaurant2.getMeals());		
 		assertTrue(fetchedRestaurant2.getMeals().size() == 2);							
 	}
-	
-	@Test
-	public void testFindByRestaurantId() {
-		Restaurant traditionalRestaurant = createTraditionalRestaurant();
-		Meal kimchi = createKimchiMeal();
-		Set<Meal> menu1 = new HashSet<Meal>();
-		menu1.add(kimchi);		
-		traditionalRestaurant.setMeals(Collections.unmodifiableSet(menu1));
 		
-		Restaurant exoticRestaurant = createExoticRestaurant();
-		Meal bugs = createBugMeal();
-		Set<Meal> menu2 = new HashSet<Meal>();
-		menu2.add(bugs);
-		exoticRestaurant.setMeals(Collections.unmodifiableSet(menu2));
-		
-		assertNull(traditionalRestaurant.getRestaurantId());
-		assertNull(exoticRestaurant.getRestaurantId());
-		restaurantRepository.save(traditionalRestaurant);
-		restaurantRepository.save(exoticRestaurant);
-		assertNotNull(traditionalRestaurant.getRestaurantId());
-		assertNotNull(exoticRestaurant.getRestaurantId());
-		Long traditionalRestaurantId = traditionalRestaurant.getRestaurantId();
-		Long exoticRestaurantId = exoticRestaurant.getRestaurantId();
-		
-		Restaurant fetchedExoticRestaurant = restaurantRepository.findByRestaurantId(exoticRestaurantId);
-		assertNotNull(fetchedExoticRestaurant);
-		assertEquals(exoticRestaurant.getAddress(), fetchedExoticRestaurant.getAddress());
-		assertEquals(exoticRestaurant.getName(), fetchedExoticRestaurant.getName());
-		assertEquals(exoticRestaurant.getDescription(), fetchedExoticRestaurant.getDescription());
-		assertEquals(exoticRestaurant.getEmail(), fetchedExoticRestaurant.getEmail());
-		assertEquals(exoticRestaurant.getMeals().size(), fetchedExoticRestaurant.getMeals().size());		
-		assertEquals(exoticRestaurant.getMeals().iterator().next(), fetchedExoticRestaurant.getMeals().iterator().next());		
-		
-		Restaurant fetchedTraditionalRestaurant = restaurantRepository.findByRestaurantId(traditionalRestaurantId);
-		assertNotNull(fetchedTraditionalRestaurant);		
-		assertEquals(traditionalRestaurant.getAddress(), fetchedTraditionalRestaurant.getAddress());
-		assertEquals(traditionalRestaurant.getName(), fetchedTraditionalRestaurant.getName());
-		assertEquals(traditionalRestaurant.getDescription(), fetchedTraditionalRestaurant.getDescription());
-		assertEquals(traditionalRestaurant.getEmail(), fetchedTraditionalRestaurant.getEmail());
-		assertEquals(traditionalRestaurant.getMeals().size(), fetchedTraditionalRestaurant.getMeals().size());		
-		assertEquals(traditionalRestaurant.getMeals().iterator().next(), fetchedTraditionalRestaurant.getMeals().iterator().next());
-				
-	}
-	
 	@Test
 	public void testFindByRestaurantName() {
 		Restaurant traditionalRestaurant = createTraditionalRestaurant();
