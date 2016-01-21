@@ -323,10 +323,12 @@ public class RestaurantControllerUnitTest extends BaseVotingUnitTest {
 		Voting voting2 = new Voting();
 		voting2.setRestaurant(traditionalRestaurant);
 		voting2.setUser("user2");
+		traditionalRestaurant.setVotings(Arrays.asList(voting1, voting2));
 		
 		Voting voting3 = new Voting();
 		voting3.setRestaurant(exoticRestaurant);
 		voting3.setUser("user3");
+		exoticRestaurant.setVotings(Arrays.asList(voting3));
 		when(votingRepository.findAll()).thenReturn(Arrays.asList(voting1, voting2, voting3));
 		
 		when(restaurantRepository.findOne(exoticRestaurantId)).thenReturn(exoticRestaurant);
@@ -336,8 +338,11 @@ public class RestaurantControllerUnitTest extends BaseVotingUnitTest {
 			MvcResult topVotedRestaurantResponse = mockMvc.perform(get("/top")).andExpect(status().isOk()).andReturn();
 			String responseContent = topVotedRestaurantResponse.getResponse().getContentAsString();
 			assertTrue(responseContent.contains(Status.SUCCESS.getStatusValue()));	
-			assertTrue(responseContent.contains(traditionalRestaurantId.toString()));
-			assertFalse(responseContent.contains(exoticRestaurantId.toString()));			
+			assertTrue(responseContent.contains(traditionalRestaurant.getName()));
+			assertTrue(responseContent.contains(voting1.getUser()));
+			assertTrue(responseContent.contains(voting2.getUser()));
+			assertFalse(responseContent.contains(exoticRestaurant.getName()));
+			assertFalse(responseContent.contains(voting3.getUser()));
 		} catch (Exception e) {
 			fail();
 		}					

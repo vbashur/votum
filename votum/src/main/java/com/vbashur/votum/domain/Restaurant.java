@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -38,6 +39,7 @@ public class Restaurant {
 	@Column(name = "email")
 	private String email;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
 	private List<Voting> votings;
 	

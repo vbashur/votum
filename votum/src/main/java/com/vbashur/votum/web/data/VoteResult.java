@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.vbashur.votum.domain.Restaurant;
 
-public class VoteResult implements Serializable {
+public class VoteResult <T> implements Serializable {
 	
 	/**
 	 * 
@@ -14,7 +14,7 @@ public class VoteResult implements Serializable {
 
 	private Long votesNum;
 	
-	private List<Restaurant> restaurants;
+	private List<T> details;
 
 	public Long getVotesNum() {
 		return votesNum;
@@ -24,12 +24,12 @@ public class VoteResult implements Serializable {
 		this.votesNum = votesNum;
 	}
 
-	public List<Restaurant> getRestaurants() {
-		return restaurants;
+	public List<T> getDetails() {
+		return details;
 	}
 
-	public void setRestaurants(List<Restaurant> restaurants) {
-		this.restaurants = restaurants;
+	public void setDetails(List<T> details) {
+		this.details = details;
 	}
 	
 
