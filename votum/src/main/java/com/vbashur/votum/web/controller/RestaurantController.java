@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,8 @@ public class RestaurantController {
 	public static String UPDATED_RESTAURTANT_MSG = "Restaurant was successfully updated";
 	
 	public static LocalTime DEADLINE = LocalTime.of(11, 00);
+	
+	public static String NOT_AVALABLE = "N/A";
 	
 	@Autowired
 	private RestaurantRepository restaurantRepository;
@@ -203,21 +207,34 @@ public class RestaurantController {
 			});
 		if (voteCountMap.size() > 0) {
 			Long maxVotes = Collections.max(voteCountMap.values());
-			List<Restaurant> topVotedRestaurants = new LinkedList<Restaurant>();
+			List<String> topVotedRestaurants = new LinkedList<String>();
 			voteCountMap.keySet().forEach( restaurantId -> {
 				if (voteCountMap.get(restaurantId).equals(maxVotes)) {
 					Restaurant r = restaurantRepository.findOne(restaurantId);
-					topVotedRestaurants.add(r);
+					StringJoiner sj = new StringJoiner(";", "[", "]");
+					sj.add(Optional.of(r.getName()).orElse(NOT_AVALABLE));
+					sj.add(Optional.of(r.getAddress()).orElse(NOT_AVALABLE));
+					sj.add(Optional.of(r.getEmail()).orElse(NOT_AVALABLE));
+					sj.add(Optional.of(r.getDescription()).orElse(NOT_AVALABLE));
+					if (r.getMeals() != null) {
+						sj.add(r.getMeals().toString());						
+					} else {
+						sj.add(NOT_AVALABLE);
+					}					
+					Set<String> votes = new HashSet<String>();
+					r.getVotings().forEach(voting -> votes.add(voting.getUser()));
+					sj.add("voted by: " + votes.toString());																		
+					topVotedRestaurants.add(sj.toString());
 				}
 			});
 			
-			VoteResult voteResult = new VoteResult();
+			VoteResult<String> voteResult = new VoteResult<String>();
 			voteResult.setVotesNum(maxVotes);
-			voteResult.setRestaurants(topVotedRestaurants);
-			OperationResult<VoteResult> response = new OperationResult<>();
+			voteResult.setDetails(topVotedRestaurants);
+			OperationResult<VoteResult<String>> response = new OperationResult<>();
 			response.setBody(voteResult);
 			response.setStatus(Status.SUCCESS);			
-			return new ResponseEntity<OperationResult<VoteResult>>(response, HttpStatus.OK);			
+			return new ResponseEntity<OperationResult<VoteResult<String>>>(response, HttpStatus.OK);			
 		} else {
 			OperationResult<String> res = new OperationResult<>();
 			res.setBody(NO_VOTES_MSG);
